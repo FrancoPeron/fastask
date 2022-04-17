@@ -1,15 +1,99 @@
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+
+:root{
+
+  --cBrand1: #41FFAD;
+  --cBrand2: #22B173;
+  --cBrand3: #E8FFE6;
+  --cBrand4: #1B1A21;
+  
+  --cBrandVariant1: #FFDB57;
+  --cBrandVariant2: #393A4A;
+  --cBrandVariant3: #FE6262;
+  --cBrandVariant4: #25242E;
+
+  --container-custom: 1340px;
+  --shadow-custom: 0px 4px 12px rgba(0, 0, 0, 0.16);
+  --border-radius: 6px;
+
 }
 
 
-.main{
-  h1{
-    color: red;
-  }
+
+
+body{
+  font-family: 'Rubik', sans-serif;
+  font-weight: 300;
+  background-color: var(--cBrand4);
+}
+
+
+
+[contenteditable="true"].task{
+  outline: none;
+  width:100%;
+  overflow: hidden;
+  word-break: break-all;
+} 
+
+.task[contenteditable=true]:empty:before, 
+.title[contenteditable=true]:empty:before{
+  content: attr(placeholder);
+  
+  display: block; /* For Firefox */
+  color: var(--cGrey6);
+  font-weight: 400 !important;
+  text-transform: none;
+}
+
+
+.done {
+  color: var(--cGrey7);
+  text-decoration: line-through;
+  text-decoration-thickness: 2px
+}
+
+.checkbox{
+  cursor: pointer;
+  position: relative;
+}
+
+input[type='checkbox']:after{
+  content: '';
+  background-color: var(--cGrey10);
+  border-radius: 0.25em;
+  border: solid 2px var(--cBrand1);
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  top: -2px;
+  left: -2px;
+}
+
+input[type='checkbox']:checked:after {
+
+  content: url(./assets/img/Tick.svg);
+  background-color: var(--cBrand1);
+
+}
+
+
+/*------------trash------------*/
+
+.trash{
+  height: 26px;
+  width: 26px;
+}
+.trash-a,.trash-b{
+  fill:none;
+  stroke:var(--cBrand1);
+}
+.trash-a,.trash-c{
+  stroke-linecap:round;
+}
+.trash-a,.trash-b{
+  stroke-width:2.5px;
+}
+
+.todolist{
+  width: 500px;
 }
