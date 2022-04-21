@@ -5,11 +5,11 @@ import './style.scss'
 
 
 const todos = [];
-todos.push({
+todos[0] = {
     id: 0,
     done: "",
-    content:"",
-})
+    content: "",
+}
 
 function taskItem(val){
     const item =  
@@ -34,42 +34,60 @@ function taskItem(val){
     return item
 }
 
-f_for(taskItem)
 
 
-function f_for(html){
-    let container = document.querySelector('[for="target"]')
-    todos.forEach(item => {
-        container.innerHTML += html(item)    
-    });
+let container = document.querySelector('[for="target"]')
+container.insertAdjacentHTML('afterend', taskItem(todos[0]));
 
+
+
+const addArray = (index, e) => {
+    
+    todos[index] = {
+        id: index,
+        done: "",
+        content: (e.currentTarget).innerText,
+    }
+
+   
 }
 
 
 
+function aD(){
+   
+    let items = document.querySelectorAll(".task");
 
-var cont = 0;
-let container = document.querySelector('[for="target"]')
-let task = document.querySelector(".task");
+    container.addEventListener("DOMNodeInserted", function(e){
+        items = document.querySelectorAll(".task");
+        console.log(items)
+    })
 
-task.addEventListener("keydown", function(e){
+    for (var i = 0; i < items.length; i++) {
+        
+
+        items[i].addEventListener("keyup", function(e){
+ 
+           
+            addArray(i, e)
+
+            if(e.key == "Enter"){
+                container.insertAdjacentHTML('beforeend', taskItem(todos[i]));
+                console.log(todos)
+                
+                
+                i++
+
+            }
+            
+           
+            
+        }, false);
+     
     
-    console.log(e)
-    
-    if(e.key == "Enter"){
-        console.log(todos)
-        
-        todos.push({
-            id: cont,
-            done: "checked",
-            content: task.innerText,
-        })
-
-        container.innerHTML += taskItem(todos[cont]) 
-        
-        cont=+1;
-        
     }
 
-}, false);
+}
 
+
+aD()
