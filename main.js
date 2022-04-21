@@ -1,16 +1,6 @@
 
 import './style.scss'
 
-
-
-
-const todos = [];
-todos[0] = {
-    id: 0,
-    done: "",
-    content: "",
-}
-
 function taskItem(val){
     const item =  
         `   
@@ -34,13 +24,6 @@ function taskItem(val){
     return item
 }
 
-
-
-let container = document.querySelector('[for="target"]')
-container.insertAdjacentHTML('afterend', taskItem(todos[0]));
-
-
-
 const addArray = (index, e) => {
     
     todos[index] = {
@@ -49,45 +32,59 @@ const addArray = (index, e) => {
         content: (e.currentTarget).innerText,
     }
 
-   
 }
 
+function showTask(){
 
+    let container = document.querySelector('[for="target"]')
+    container.insertAdjacentHTML('afterend', taskItem(todos[0]));
 
-function aD(){
-   
     let items = document.querySelectorAll(".task");
 
-    container.addEventListener("DOMNodeInserted", function(e){
-        items = document.querySelectorAll(".task");
-        console.log(items)
-    })
-
-    for (var i = 0; i < items.length; i++) {
+    for(var i = 0; i < items.length; i++) {
         
-
         items[i].addEventListener("keyup", function(e){
- 
-           
-            addArray(i, e)
+            addArray(i, e) // agrego una tarea
 
             if(e.key == "Enter"){
-                container.insertAdjacentHTML('beforeend', taskItem(todos[i]));
+                container.insertAdjacentHTML('beforebegin', taskItem(todos[i]));
+                e.currentTarget.innerText = "";
                 console.log(todos)
-                
-                
-                i++
-
+                i++;
+                items = document.querySelectorAll(".task");
             }
             
-           
+
             
         }, false);
-     
+
+
     
     }
 
 }
 
 
-aD()
+/*--------------------------------------------------------*/
+
+
+const todos = [];
+todos[0] = {
+    id: 0,
+    done: "",
+    content: "",
+}
+
+showTask();
+
+
+
+
+
+
+
+   /*  container.addEventListener("DOMNodeInserted", function(e){
+        items = document.querySelectorAll(".task");
+        console.log(items)
+    })
+ */
