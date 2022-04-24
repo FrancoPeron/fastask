@@ -4,7 +4,7 @@ import './style.scss'
 function taskItem(val){
     const item =  
         `   
-        <li id="${val.id}" class="task-item flex flex-row justify-between align-items-start mb-8">
+        <div id="task${val.id}" class="task-item flex flex-row justify-between align-items-start mb-8">
 
             <div class="flex flex-row align-items-start flex-fill">
                 <input class="checkbox mr-12 mt-4" type="checkbox" ${val.done}>
@@ -19,12 +19,12 @@ function taskItem(val){
                 </g>
             </svg>
 
-        </li>
+        </div>
         `
     return item
 }
 
-const addArray = (index, e) => {
+const addArray = (e, index ) => {
     
     todos[index] = {
         id: index,
@@ -37,36 +37,92 @@ const addArray = (index, e) => {
 function showTask(){
 
     let container = document.querySelector('[for="target"]')
-    container.insertAdjacentHTML('afterend', taskItem(todos[0]));
 
-    let items = document.querySelectorAll(".task");
+    setTimeout(() => {
+        container.insertAdjacentHTML('beforeend', taskItem(todos[0]));
+    }, 100);
 
-    for(var i = 0; i < items.length; i++) {
-        
-        items[i].addEventListener("keyup", function(e){
-            addArray(i, e) // agrego una tarea
+    let cant = 0;
 
-            if(e.key == "Enter"){
-                container.insertAdjacentHTML('beforebegin', taskItem(todos[i]));
-                e.currentTarget.innerText = "";
-                console.log(todos)
-                i++;
-                items = document.querySelectorAll(".task");
-            }
-            
-
-            
-        }, false);
-
-
+    const config = {  
+        attributes: true,
+        characterData: true,
+        childList: true,
+        subtree: true,
+        attributeOldValue: true,
+        characterDataOldValue: true };
     
-    }
+        
+    const observer = new MutationObserver((mutationsList) => {
+        // console.log(mutationsList.length)
+        
+        mutationsList.forEach(function(mutation) {
+            
+            console.log(mutation);
+
+            (mutation.target).addEventListener('keydown', (e) => {
+                
+
+                if (e.key == "Enter"){
+                    
+                    
+                    addArray(e,cant)
+                    const node = document.createElement("li")
+                    node.innerHTML = taskItem(todos[cant])
+                    container.append(node)
+                    
+
+                    cant+=1;
+                    console.log(todos)
+                    console.log(mutation)
+
+
+                    e.preventDefault()
+                  
+                }
+
+                
+            });
+
+
+
+           /*  (mutation.target).addEventListener("keyup", function(e){
+
+
+                
+                
+            }, false); */
+            // console.log(mutation.attributeName)
+        }); 
+
+      
+        
+      /*   for(var i = 0; i < items.length; i++) {
+        
+            items[i].addEventListener("keyup", function(e){
+                addArray(i, e) // agrego una tarea
+                
+                if(e.key == "Enter"){
+                    container.insertAdjacentHTML('beforebegin', taskItem(todos[i]));
+                    e.currentTarget.innerText = "";
+                    console.log(todos)
+                    i++;
+                    items = document.querySelectorAll(".task");
+                }
+                
+                
+                
+            }, false);
+        } */
+      
+    })
+    observer.observe(container, config)
+    
 
 }
 
 
 /*--------------------------------------------------------*/
-
 
 const todos = [];
 todos[0] = {
@@ -75,14 +131,25 @@ todos[0] = {
     content: "",
 }
 
+
 showTask();
 
 
 
 
+/* const observer = new MutationObserver((mutationsList) => {
+    mutationsList.forEach(function(mutation) {
+       console.log(mutation)
+      });   
+})
+observer.observe(document.getElementById('titletask'),  {
+    subtree: true,
+    childList: true,
+    attributes: true,
+    characterData: true,
+})
 
-
-
+ */
    /*  container.addEventListener("DOMNodeInserted", function(e){
         items = document.querySelectorAll(".task");
         console.log(items)
