@@ -109,6 +109,7 @@ function showTask2(){
             // item.removeEventListener('keydown', enter)
 
             item.addEventListener('keypress', enter)
+            
         })
 
         items = document.querySelectorAll(".task")
@@ -128,6 +129,8 @@ function enter(e){
         addArray(e,index)
         
         container.insertAdjacentHTML('beforeend',taskItem(todos[index+1]));
+
+
         cant+=1;
 
         // container.insertAdjacentHTML('beforeend',taskItem(todos[cant+1]));
@@ -139,6 +142,17 @@ function enter(e){
 
 function fp(e){
     console.log(2,e)
+}
+
+function setCursor(){
+    const el = document.getElementById('selectable');  
+    const selection = window.getSelection();  
+    const range = document.createRange();  
+    selection.removeAllRanges();  
+    range.selectNodeContents(el);  
+    range.collapse(false);  
+    selection.addRange(range);  
+    el.focus();
 }
 
 
