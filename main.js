@@ -4,11 +4,11 @@ import './style.scss'
 function taskItem(val){
     const item =  
         `   
-        <div id="task${val.id}" class="task-item flex flex-row justify-between align-items-start mb-8">
+        <li id="task${val.id}" class="task-item flex flex-row justify-between align-items-start mb-8">
 
             <div class="flex flex-row align-items-start flex-fill">
                 <input class="checkbox mr-12 mt-4" type="checkbox" ${val.done}>
-                <p class="task fw-6 f-b1 c-g1" placeholder="Add a task..." contenteditable="true">${val.content}</p>
+                <p task="${val.id}" class="task fw-6 f-b1 c-g1" placeholder="Add a task..." contenteditable="true">${val.content}</p>
             </div> 
 
             <svg class="trash cursor-pointer p-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
@@ -19,38 +19,35 @@ function taskItem(val){
                 </g>
             </svg>
 
-        </div>
+        </li>
         `
     return item
 }
 
-const addArray = (e, index ) => {
+const addArray = (e, index) => {
     
     todos[index] = {
         id: index,
         done: "",
         content: (e.currentTarget).innerText,
     }
+    
+    todos.splice(index+1, 0,  {
+        id: index+1,
+        done: "",
+        content: "",
+    })
+    if ( todos[index+1].content !== todos[index].content ) {
+      console.log("s")  
+    }
+
 
 }
 
 function showTask(){
 
-    let container = document.querySelector('[for="target"]')
 
-    setTimeout(() => {
-        container.insertAdjacentHTML('beforeend', taskItem(todos[0]));
-    }, 100);
-
-    let cant = 0;
-
-    const config = {  
-        attributes: true,
-        characterData: true,
-        childList: true,
-        subtree: true,
-        attributeOldValue: true,
-        characterDataOldValue: true };
+    cant = 1;
     
         
     const observer = new MutationObserver((mutationsList) => {
@@ -58,73 +55,106 @@ function showTask(){
         
         mutationsList.forEach(function(mutation) {
             
-            console.log(mutation);
-
+            console.log((mutation.target));
+            
             (mutation.target).addEventListener('keydown', (e) => {
+                //console.log(e.target)
+                console.log(e)
+                addArray(e,cant)
                 
-
                 if (e.key == "Enter"){
                     
+                    e.preventDefault()
+                    console.log(e.target)
+                    console.log(mutation.addedNodes)
                     
-                    addArray(e,cant)
+                    
                     const node = document.createElement("li")
                     node.innerHTML = taskItem(todos[cant])
                     container.append(node)
-                    
-
-                    cant+=1;
-                    console.log(todos)
-                    console.log(mutation)
-
-
                     e.preventDefault()
-                  
-                }
+                    cant+=1;
+                    
+                    
+                    
+                } 
 
                 
             });
 
-
-
-           /*  (mutation.target).addEventListener("keyup", function(e){
-
-
-                
-                
-            }, false); */
-            // console.log(mutation.attributeName)
+            (mutation.target).addEventListener('click', (e) => {
+                console.log(e.target)
+            })
         }); 
 
-      
-        
-      /*   for(var i = 0; i < items.length; i++) {
-        
-            items[i].addEventListener("keyup", function(e){
-                addArray(i, e) // agrego una tarea
-                
-                if(e.key == "Enter"){
-                    container.insertAdjacentHTML('beforebegin', taskItem(todos[i]));
-                    e.currentTarget.innerText = "";
-                    console.log(todos)
-                    i++;
-                    items = document.querySelectorAll(".task");
-                }
-                
-                
-                
-            }, false);
-        } */
-      
     })
     observer.observe(container, config)
     
 
 }
 
+function showTask2(){
+
+    container.insertAdjacentHTML('beforeend',taskItem(todos[cant]));
+    cant+=1;
+    let items = document.querySelectorAll(".task");
+    var el = document.documentElement;
+    el.addEventListener('DOMNodeInserted', e => {
+
+        items.forEach((item,i) => {
+
+
+            item.addEventListener('change', fp)
+
+            // item.removeEventListener('keydown', enter)
+
+            item.addEventListener('keypress', enter)
+        })
+
+        items = document.querySelectorAll(".task")
+
+    }, false);
+        
+}
+
+function enter(e){
+    
+    if (e.key == "Enter"){
+        e.preventDefault()
+
+        let index = parseInt((e.target).getAttribute("task"))
+        console.log(e.target)
+        
+        addArray(e,index)
+        
+        container.insertAdjacentHTML('beforeend',taskItem(todos[index+1]));
+        cant+=1;
+
+        // container.insertAdjacentHTML('beforeend',taskItem(todos[cant+1]));
+        
+        console.log(todos);
+
+    }
+}
+
+function fp(e){
+    console.log(2,e)
+}
+
 
 /*--------------------------------------------------------*/
 
 const todos = [];
+let container = document.querySelector('[for="target"]')
+const config = {  
+    attributes: true,
+    characterData: true,
+    childList: true,
+    subtree: true,
+    attributeOldValue: true,
+    characterDataOldValue: true 
+};
+
 todos[0] = {
     id: 0,
     done: "",
@@ -132,26 +162,17 @@ todos[0] = {
 }
 
 
-showTask();
+let cant = 0;
+
+
+showTask2();
 
 
 
 
-/* const observer = new MutationObserver((mutationsList) => {
-    mutationsList.forEach(function(mutation) {
-       console.log(mutation)
-      });   
-})
-observer.observe(document.getElementById('titletask'),  {
-    subtree: true,
-    childList: true,
-    attributes: true,
-    characterData: true,
-})
+  /* const node = document.createElement("li")
+        node.innerHTML = taskItem(todos[cant])
 
- */
-   /*  container.addEventListener("DOMNodeInserted", function(e){
-        items = document.querySelectorAll(".task");
-        console.log(items)
-    })
- */
+
+        console.log(items[cant-1])
+        container.insertBefore(node,items[cant-1]) */
