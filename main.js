@@ -26,63 +26,21 @@ function taskItem(val){
     return item
 }
 
-const addArray = (e, index) => {
-    
-    todos[index] = {
-        done: "",
-        content: e.target.innerText,
-    }
-   /*  todos.splice(index+1, 0,  {
-        done: "",
-        content: "",
-    }) */
-
-   /*  if(todos.length > 1){
-        console.log((todos[index]))
-        
-        if((todos[index]) === ""){
-            todos.splice(index+1, 1,  {
-                done: "",
-                content: "",
-            })
-        }
-        else{
-        
-            todos.splice(index+1, 0,  {
-                done: "",
-                content: "",
-            })
-        }
-    }else{
-        
-        todos.splice(index+1, 0,  {
-            done: "",
-            content: "",
-        })
-    } */
-    
-    
-    
-
-
-}
-
-function deleteArray(){
-    todos.splice(1, 1);
-    printTodos()
-}
-
 
 function click(e){
-    
 
-    let trash = (e.target.parentElement.children)[1].getAttribute("btn") 
+    let trashBtn = ((e.target.parentElement.children)[1]).getAttribute('btn')
 
-    if (trash === "trash" && todos.length > 1) {
-        deleteArray()
+    // console.log(e.target.parentElement.children[1])
+
+    let newArray =  Array.from(container.children)
+    const index = newArray.indexOf(e.target.parentElement.parentElement);
+    console.log(index,"--");
+
+    if (trashBtn === "trash" && todos.length > 1) {
+        deleteArray(index-1)
     }
-
-    console.log(todos);
+    // console.log(todos);
 }
 
 function keyup(e){
@@ -111,6 +69,7 @@ function keyup(e){
             setCursor(nextNode)
             
         }
+        
 
         if (e.key === "Backspace" && e.target.innerText == ""){
             console.log(e.key)
@@ -122,6 +81,20 @@ function keyup(e){
 
     console.log(todos);
 }
+
+const addArray = (e, index) => {
+    
+    todos[index] = {
+        done: "",
+        content: e.target.innerText,
+    }
+}
+
+function deleteArray(index){
+    todos.splice(index, 1);
+    printTodos()
+}
+
 
 function setCursor(el){ 
     const selection = window.getSelection();  
@@ -175,11 +148,24 @@ new MutationObserver((mutationsList) => {
         }
 
         (mutation.target).addEventListener('keyup', keyup);
+        (mutation.target).addEventListener('click', click);
         
-        (mutation.target).addEventListener('click', click)
+        /* console.log((mutation.target))
+        ((mutation.target).querySelector('.trash')).addEventListener('click', click) */
+        
+       
+
+
+       
     }); 
 
 }).observe(container, config)
+
+
+
+
+
+
 
 
 
