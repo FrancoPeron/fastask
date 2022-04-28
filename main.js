@@ -7,11 +7,11 @@ function taskItem(val){
         <li id="task${val.id}" class="task-item flex flex-row justify-between align-items-start mb-8">
 
             <div class="flex flex-row align-items-start flex-fill">
-                <input todo-check class="checkbox mr-12 mt-4" type="checkbox" ${val.done}>
-                <p class="task fw-6 f-b1 c-g1" placeholder="Add a task..." contenteditable="true" tabindex="1">${val.content}</p>
+                <input todo-check class="checkbox mr-12 mt-4" type="checkbox" ${(val.done) ? "checked": ""}>
+                <p todo-task class="task fw-6 f-b1 c-g1" placeholder="Add a task..." contenteditable="true" tabindex="1">${val.content}</p>
             </div>
             
-            <svg btn="trash" class="trash cursor-pointer p-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
+            <svg todo-trash class="trash cursor-pointer p-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
                 <g transform="translate(-89.25 -860.75)">
                     <line class="trash-a" x2="24" transform="translate(90.5 867)"/>
                     <path class="trash-b" d="M2,0h8a2,2,0,0,1,2,2V5a0,0,0,0,1,0,0H0A0,0,0,0,1,0,5V2A2,2,0,0,1,2,0Z" transform="translate(96.5 862)"/>
@@ -25,10 +25,57 @@ function taskItem(val){
 }
 
 
+function printTodos(){
+
+    container.innerHTML = ""
+    for (let i = 0; i < todos.length; i++) {
+        container.insertAdjacentHTML('beforeend',taskItem(todos[i]));
+    }
+
+}
+
+
+
+const addArray = (e, index) => {
+    
+    todos[index] = {
+        id: index,
+        done: todos[index].done,
+        content: e.target.innerText,
+    }
+}
+
+function deleteArray(index){
+    
+    for (let i = index; i < todos.length; i++) {
+        todos[i].id = i-1
+    }
+    todos.splice(index, 1);
+    printTodos()
+}
+
+
+function setCursor(index, position){ 
+    let todosHtmlArray = Array.from(container.children)
+    let nextNode = todosHtmlArray[index+position].querySelector('[todo-task]')
+
+    const selection = window.getSelection();  
+    const range = document.createRange();  
+    selection.removeAllRanges();  
+    range.selectNodeContents(nextNode);  
+    range.collapse(false);  
+    selection.addRange(range);  
+    nextNode.focus();
+}
+
+
+
+
 function click(e){
 
+    
     /* Me da el id del elemnto que clickie */
-  
+    
     let newArray = Array.from(container.children)
     let index = null
     newArray.forEach(todoItem =>{
@@ -36,31 +83,41 @@ function click(e){
         if(todoItemClicked) index = newArray.indexOf(todoItem);
     })
 
-    /*---------------------------------------------------*/
-
-    /* Borar */
+    console.log(index)
     
-    let btnTrash = ((container.children)[index]).querySelector('[btn="trash"]')
-    let subElemnts = btnTrash.contains(e.target)
+    if (index !== null) {
+        let item = ((container.children)[index])
+        /*---------------------------------------------------*/
+
+        /* Borar */
+        
+        let btnTrash = item.querySelector('[todo-trash]')
+        let subTrashElements = btnTrash.contains(e.target)
+
+        if (subTrashElements && todos.length > 1) {
+            deleteArray(index)
+        }
 
 
-    if (subElemnts && todos.length > 1) {
-        deleteArray(index)
+        /*---------------------------------------------------*/
+        /* Check */
+
+        let btnCheck = item.querySelector('[todo-check]')
+        let subCheckElements = btnCheck.contains(e.target)
+
+        if (subCheckElements) {
+            todos[index].done = !todos[index].done
+            printTodos()
+        }
+        console.log(todos);
     }
-
-
-    /*********************** */
-
-    let btnCheck = ((e.currentTarget.children)[index]).querySelector('[todo-check]')
-    
-    console.log(btnCheck);
 }
 
 function keyup(e){
     e.preventDefault()
     
-    let newArray =  Array.from(container.children)
-    const index = newArray.indexOf(e.target.parentElement.parentElement);
+    let todosHtmlArray =  Array.from(container.children)
+    const index = todosHtmlArray.indexOf(e.target.parentElement.parentElement);
     //console.log(index,"---");
 
     
@@ -69,90 +126,66 @@ function keyup(e){
         addArray(e,index)
         console.log(todos);
         if (e.key == "Enter"){
-            
-            console.warn(index+1)
+
+           /*  todos[index].content = todos[index].content.slice(0, -2) */
+        
             todos.splice(index+1, 0,  {
                 id: index+1,
-                done: "",
+                done: false,
                 content: "",
             })
             
             for (let i = index+2; i < todos.length; i++) {
                 if (todos.length != 2){
-
-                    console.log( todos[i].id)
                     todos[i].id = i
                 }
             }
             
             printTodos()
             
-            let todosHtmlArray = Array.from(container.children)
-            let nextNode = todosHtmlArray[index+1].querySelector(".task")
-            setCursor(nextNode)
-            //console.log(todos);
+            setCursor(index,1)
+            console.log(todos);
             
             
         }
-        
 
-        if (e.key === "Backspace" && e.target.innerText == ""){
-            console.log(e.key)
-            deleteArray()
-            
-        }
+        deleteBtn(e,index)
+        
         
     }
 
     //console.log(todos);
 }
 
-const addArray = (e, index) => {
-    
-    todos[index] = {
-        id: index,
-        done: "",
-        content: e.target.innerText.slice(0, -2),
+function deleteBtn(e,index){
+   
+    if (e.target.innerText === "" && todos.length > 1){ 
+
+        (e.target).addEventListener("keydown", (e) =>{
+            
+            if (e.key === "Backspace") {
+                deleteArray(index);
+                (index == 0) ? setCursor(index, 0) : setCursor(index, -1)
+                
+                e.preventDefault()
+            }
+            else{
+                
+            }
+
+        })
+            
+            
     }
-}
-
-function deleteArray(index){
-    
-    for (let i =  index; i < todos.length; i++) {
-        todos[i].id = i-1
-    }
-    todos.splice(index, 1);
-    printTodos()
-}
-
-
-function setCursor(el){ 
-    const selection = window.getSelection();  
-    const range = document.createRange();  
-    selection.removeAllRanges();  
-    range.selectNodeContents(el);  
-    range.collapse(false);  
-    selection.addRange(range);  
-    el.focus();
-}
-
-
-function printTodos(){
-
-    container.innerHTML = ""
-    for (let index = 0; index < todos.length; index++) {
-        
-        container.insertAdjacentHTML('beforeend',taskItem(todos[index]));
-    }
-
+   
 }
 
 /*--------------------------------------------------------*/
 
-let container = document.querySelector('[for="target"]')
+let container = document.querySelector('[items-list]')
 const todos = [{
     id: 0,
-    done: "",
+    done: false,
     content: "",
 }]
 
@@ -169,43 +202,16 @@ const config = {
 printTodos()
     
 new MutationObserver((mutationsList) => {
-    // console.log(mutationsList.length)
     
     mutationsList.forEach(function(mutation) {
 
-        if(document.contains((mutation.target))) {
-            console.log('#child has been added');
-            //observer.disconnect();
-        }
-
         (mutation.target).addEventListener('keyup', keyup);
         (mutation.target).addEventListener('click', click);
-        
-        //console.log((mutation.target))
-        // ((mutation.target).querySelector('.trash')).addEventListener('click', click)
         
 
     }); 
 
 }).observe(container, config)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-console.log(document.body.contains(document.querySelector("main")))
-
 
 
 
