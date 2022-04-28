@@ -4,13 +4,12 @@ import './style.scss'
 function taskItem(val){
     const item =  
         `   
-        <li class="task-item flex flex-row justify-between align-items-start mb-8">
+        <li id="task${val.id}" class="task-item flex flex-row justify-between align-items-start mb-8">
 
             <div class="flex flex-row align-items-start flex-fill">
-                <input class="checkbox mr-12 mt-4" type="checkbox" ${val.done}>
+                <input todo-check class="checkbox mr-12 mt-4" type="checkbox" ${val.done}>
                 <p class="task fw-6 f-b1 c-g1" placeholder="Add a task..." contenteditable="true" tabindex="1">${val.content}</p>
             </div>
-            
             
             <svg btn="trash" class="trash cursor-pointer p-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
                 <g transform="translate(-89.25 -860.75)">
@@ -20,7 +19,6 @@ function taskItem(val){
                 </g>
             </svg>
             
-
         </li>
         `
     return item
@@ -29,18 +27,33 @@ function taskItem(val){
 
 function click(e){
 
-    let trashBtn = ((e.target.parentElement.children)[1]).getAttribute('btn')
+    /* Me da el id del elemnto que clickie */
+  
+    let newArray = Array.from(container.children)
+    let index = null
+    newArray.forEach(todoItem =>{
+        let todoItemClicked = todoItem.contains(e.target)
+        if(todoItemClicked) index = newArray.indexOf(todoItem);
+    })
 
-    // console.log(e.target.parentElement.children[1])
+    /*---------------------------------------------------*/
 
-    let newArray =  Array.from(container.children)
-    const index = newArray.indexOf(e.target.parentElement.parentElement);
-    console.log(index,"--");
+    /* Borar */
+    
+    let btnTrash = ((container.children)[index]).querySelector('[btn="trash"]')
+    let subElemnts = btnTrash.contains(e.target)
 
-    if (trashBtn === "trash" && todos.length > 1) {
-        deleteArray(index-1)
+
+    if (subElemnts && todos.length > 1) {
+        deleteArray(index)
     }
-    // console.log(todos);
+
+
+    /*********************** */
+
+    let btnCheck = ((e.currentTarget.children)[index]).querySelector('[todo-check]')
+    
+    console.log(btnCheck);
 }
 
 function keyup(e){
@@ -48,25 +61,37 @@ function keyup(e){
     
     let newArray =  Array.from(container.children)
     const index = newArray.indexOf(e.target.parentElement.parentElement);
-    console.log(index,"--");
+    //console.log(index,"---");
 
     
     if (index != -1) {
 
         addArray(e,index)
-        
+        console.log(todos);
         if (e.key == "Enter"){
-
+            
+            console.warn(index+1)
             todos.splice(index+1, 0,  {
+                id: index+1,
                 done: "",
                 content: "",
             })
-        
+            
+            for (let i = index+2; i < todos.length; i++) {
+                if (todos.length != 2){
+
+                    console.log( todos[i].id)
+                    todos[i].id = i
+                }
+            }
+            
             printTodos()
             
             let todosHtmlArray = Array.from(container.children)
             let nextNode = todosHtmlArray[index+1].querySelector(".task")
             setCursor(nextNode)
+            //console.log(todos);
+            
             
         }
         
@@ -79,18 +104,23 @@ function keyup(e){
         
     }
 
-    console.log(todos);
+    //console.log(todos);
 }
 
 const addArray = (e, index) => {
     
     todos[index] = {
+        id: index,
         done: "",
-        content: e.target.innerText,
+        content: e.target.innerText.slice(0, -2),
     }
 }
 
 function deleteArray(index){
+    
+    for (let i =  index; i < todos.length; i++) {
+        todos[i].id = i-1
+    }
     todos.splice(index, 1);
     printTodos()
 }
@@ -121,6 +151,7 @@ function printTodos(){
 
 let container = document.querySelector('[for="target"]')
 const todos = [{
+    id: 0,
     done: "",
     content: "",
 }]
@@ -150,13 +181,10 @@ new MutationObserver((mutationsList) => {
         (mutation.target).addEventListener('keyup', keyup);
         (mutation.target).addEventListener('click', click);
         
-        /* console.log((mutation.target))
-        ((mutation.target).querySelector('.trash')).addEventListener('click', click) */
+        //console.log((mutation.target))
+        // ((mutation.target).querySelector('.trash')).addEventListener('click', click)
         
-       
 
-
-       
     }); 
 
 }).observe(container, config)
@@ -176,7 +204,7 @@ new MutationObserver((mutationsList) => {
 
 
 
-
+console.log(document.body.contains(document.querySelector("main")))
 
 
 
