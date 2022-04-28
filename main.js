@@ -1,6 +1,59 @@
 
 import './style.scss'
 
+
+/*--------------------------------------------------------*/
+
+let container = document.querySelector('[items-list]')
+const todos = [{
+    id: 0,
+    done: false,
+    content: "",
+}]
+
+const config = {  
+    attributes: true,
+    characterData: true,
+    childList: true,
+    subtree: true,
+    attributeOldValue: true,
+    characterDataOldValue: true 
+};
+
+
+printTodos()
+    
+new MutationObserver((mutationsList) => {
+    
+    mutationsList.forEach(function(mutation) {
+
+        (mutation.target).addEventListener('keyup', keyup);
+        (mutation.target).addEventListener('click', click);
+        
+
+    }); 
+
+}).observe(container, config)
+
+function keyup(e){
+
+    let todosHtmlArray =  Array.from(container.children)
+    const index = todosHtmlArray.indexOf(e.target.parentElement.parentElement);
+    //console.log(index,"---");
+    
+    if (index != -1) {
+        
+        addArray(e,index)
+
+        deleteBtn(e,index)
+
+    }
+
+    //console.log(todos);
+}
+
+
+
 function taskItem(val){
     const item =  
         `   
@@ -23,8 +76,6 @@ function taskItem(val){
         `
     return item
 }
-
-
 function printTodos(){
 
     container.innerHTML = ""
@@ -36,13 +87,47 @@ function printTodos(){
 
 
 
-const addArray = (e, index) => {
+
+
+function addArray(e, index){
     
     todos[index] = {
         id: index,
         done: todos[index].done,
-        content: e.target.innerText,
+        content: e.target.innerText.slice(0, getCaretIndex(e.target)),
+    }    
+    
+    if (e.key == "Enter" && !e.shiftKey){
+
+        let newContent = ""
+
+        if (getCaretIndex(e.target) < e.target.innerText.length-2) {
+            
+            newContent = e.target.innerText.slice(getCaretIndex(e.target), e.target.innerText.length)
+        }
+        
+        console.log(e.target.innerText.length)
+        console.log(getCaretIndex(e.target))
+        todos.splice(index+1, 0,  {
+            id: index+1,
+            done: false,
+            content: newContent,
+        })
+        
+        for (let i = index+2; i < todos.length; i++) {
+            if (todos.length != 2){
+                todos[i].id = i
+            }
+        }
+        
+        printTodos()
+        
+        setCursor(index+1,"start")
+        console.log(todos);
+        
+        
     }
+    
 }
 
 function deleteArray(index){
@@ -55,18 +140,71 @@ function deleteArray(index){
 }
 
 
-function setCursor(index, position){ 
+function setCursor(index, position ){ 
     let todosHtmlArray = Array.from(container.children)
-    let nextNode = todosHtmlArray[index+position].querySelector('[todo-task]')
+    let nextNode = todosHtmlArray[index].querySelector('[todo-task]')
 
     const selection = window.getSelection();  
     const range = document.createRange();  
+
+    if (position === "start") {
+        range.setStart(nextNode, 0);
+    }else{
+        
+        range.selectNodeContents(nextNode);
+        range.collapse(false);
+    }
+
+
     selection.removeAllRanges();  
-    range.selectNodeContents(nextNode);  
-    range.collapse(false);  
-    selection.addRange(range);  
+    selection.addRange(range);
     nextNode.focus();
 }
+function getCaretIndex(element) {
+    let position = 0;
+    const isSupported = typeof window.getSelection !== "undefined";
+    if (isSupported) {
+        const selection = window.getSelection();
+        // Check if there is a selection (i.e. cursor in place)
+        if (selection.rangeCount !== 0) {
+            // Store the original range
+            const range = window.getSelection().getRangeAt(0);
+            // Clone the range
+            const preCaretRange = range.cloneRange();
+            // Select all textual contents from the contenteditable element
+            preCaretRange.selectNodeContents(element);
+            // And set the range end to the original clicked position
+            preCaretRange.setEnd(range.endContainer, range.endOffset);
+            // Return the text length from contenteditable start to the range end
+            position = preCaretRange.toString().length;
+        }
+    }
+    return position;
+}
+
+function deleteBtn(e,index){
+   
+    if (getCaretIndex(e.target) === 0 && todos.length > 1){ 
+
+        (e.target).addEventListener("keydown", (e) =>{
+            
+            if (e.key === "Backspace") {
+                deleteArray(index);
+                (index == 0) ? setCursor(index, "end") : setCursor(index-1, "end")
+                
+                e.preventDefault()
+            }
+            else{
+                
+            }
+
+        })
+            
+            
+    }
+   
+}
+
 
 
 
@@ -113,105 +251,6 @@ function click(e){
     }
 }
 
-function keyup(e){
-    e.preventDefault()
-    
-    let todosHtmlArray =  Array.from(container.children)
-    const index = todosHtmlArray.indexOf(e.target.parentElement.parentElement);
-    //console.log(index,"---");
-
-    
-    if (index != -1) {
-
-        addArray(e,index)
-        console.log(todos);
-        if (e.key == "Enter"){
-
-           /*  todos[index].content = todos[index].content.slice(0, -2) */
-        
-            todos.splice(index+1, 0,  {
-                id: index+1,
-                done: false,
-                content: "",
-            })
-            
-            for (let i = index+2; i < todos.length; i++) {
-                if (todos.length != 2){
-                    todos[i].id = i
-                }
-            }
-            
-            printTodos()
-            
-            setCursor(index,1)
-            console.log(todos);
-            
-            
-        }
-
-        deleteBtn(e,index)
-        
-        
-    }
-
-    //console.log(todos);
-}
-
-function deleteBtn(e,index){
-   
-    if (e.target.innerText === "" && todos.length > 1){ 
-
-        (e.target).addEventListener("keydown", (e) =>{
-            
-            if (e.key === "Backspace") {
-                deleteArray(index);
-                (index == 0) ? setCursor(index, 0) : setCursor(index, -1)
-                
-                e.preventDefault()
-            }
-            else{
-                
-            }
-
-        })
-            
-            
-    }
-   
-}
-
-/*--------------------------------------------------------*/
-
-let container = document.querySelector('[items-list]')
-const todos = [{
-    id: 0,
-    done: false,
-    content: "",
-}]
-
-const config = {  
-    attributes: true,
-    characterData: true,
-    childList: true,
-    subtree: true,
-    attributeOldValue: true,
-    characterDataOldValue: true 
-};
-
-
-printTodos()
-    
-new MutationObserver((mutationsList) => {
-    
-    mutationsList.forEach(function(mutation) {
-
-        (mutation.target).addEventListener('keyup', keyup);
-        (mutation.target).addEventListener('click', click);
-        
-
-    }); 
-
-}).observe(container, config)
 
 
 
