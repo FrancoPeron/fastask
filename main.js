@@ -1,5 +1,5 @@
 
-import './style.scss'
+// import './style.scss'
 
 function taskItem(val){
     const item =  
@@ -57,7 +57,6 @@ function showTask(){
 
             
         }, false);
-
 
     
     }
