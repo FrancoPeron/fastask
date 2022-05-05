@@ -82,6 +82,7 @@ input[type='checkbox']:checked:after {
 .trash{
   height: 26px;
   width: 26px;
+  cursor: pointer;
 }
 .trash-a,.trash-b{
   fill:none;
