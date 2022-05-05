@@ -1,59 +1,6 @@
 
 
-
-
-/*--------------------------------------------------------*/
-
-let container = document.querySelector('[items-list]')
-const todos = [{
-    id: 0,
-    done: false,
-    content: "",
-}]
-
-const config = {  
-    attributes: true,
-    characterData: true,
-    childList: true,
-    subtree: true,
-    attributeOldValue: true,
-    characterDataOldValue: true 
-};
-
-
-printTodos()
-    
-new MutationObserver((mutationsList) => {
-    
-    mutationsList.forEach(function(mutation) {
-
-        (mutation.target).addEventListener('keyup', keyup);
-        (mutation.target).addEventListener('click', click);
-        
-
-    }); 
-
-}).observe(container, config)
-
-function keyup(e){
-
-    let todosHtmlArray =  Array.from(container.children)
-    const index = todosHtmlArray.indexOf(e.target.parentElement.parentElement);
-    //console.log(index,"---");
-    
-    if (index != -1) {
-        
-        addArray(e,index)
-
-        deleteBtn(e,index)
-
-    }
-
-    //console.log(todos);
-}
-
-
-
+/* -----------: Retorna el html con los datos del array recibido */
 function taskItem(val){
     const item =  
         `   
@@ -76,6 +23,8 @@ function taskItem(val){
         `
     return item
 }
+
+/* -----------: Imprime por pantalla los task (tareas) */
 function printTodos(){
 
     container.innerHTML = ""
@@ -85,81 +34,22 @@ function printTodos(){
 
 }
 
+/*====================================================================================================================================*/
 
+/* -----------: Retorna el id del elemento con el que se interactuo */
+function getTargetId(e){
+    let index = null
+    let tasksHtmlArray = Array.from(container.children)
+    tasksHtmlArray.forEach(todoItem =>{
+        let todoItemClicked = todoItem.contains(e.target)
+        if (todoItemClicked) 
+            index = tasksHtmlArray.indexOf(todoItem);
+    })
+    return index
 
-
-
-function addArray(e, index){
-    
-    todos[index] = {
-        id: index,
-        done: todos[index].done,
-        content: e.target.innerText.slice(0, getCaretIndex(e.target)),
-    }    
-    
-    if (e.key == "Enter" && !e.shiftKey){
-
-        let newContent = ""
-
-        if (getCaretIndex(e.target) < e.target.innerText.length-2) {
-            
-            newContent = e.target.innerText.slice(getCaretIndex(e.target), e.target.innerText.length)
-        }
-        
-        console.log(e.target.innerText.length)
-        console.log(getCaretIndex(e.target))
-        todos.splice(index+1, 0,  {
-            id: index+1,
-            done: false,
-            content: newContent,
-        })
-        
-        for (let i = index+2; i < todos.length; i++) {
-            if (todos.length != 2){
-                todos[i].id = i
-            }
-        }
-        
-        printTodos()
-        
-        setCursor(index+1,"start")
-        console.log(todos);
-        
-        
-    }
-    
 }
 
-function deleteArray(index){
-    
-    for (let i = index; i < todos.length; i++) {
-        todos[i].id = i-1
-    }
-    todos.splice(index, 1);
-    printTodos()
-}
-
-
-function setCursor(index, position ){ 
-    let todosHtmlArray = Array.from(container.children)
-    let nextNode = todosHtmlArray[index].querySelector('[todo-task]')
-
-    const selection = window.getSelection();  
-    const range = document.createRange();  
-
-    if (position === "start") {
-        range.setStart(nextNode, 0);
-    }else{
-        
-        range.selectNodeContents(nextNode);
-        range.collapse(false);
-    }
-
-
-    selection.removeAllRanges();  
-    selection.addRange(range);
-    nextNode.focus();
-}
+/* -----------: Retorna la posicion del cursor de un item */
 function getCaretIndex(element) {
     let position = 0;
     const isSupported = typeof window.getSelection !== "undefined";
@@ -182,71 +72,166 @@ function getCaretIndex(element) {
     return position;
 }
 
-function deleteBtn(e,index){
-   
-    if (getCaretIndex(e.target) === 0 && todos.length > 1){ 
+function setCursor(index, position){ 
+    let todosHtmlArray = Array.from(container.children)
+    let nextNode = todosHtmlArray[index].querySelector('[todo-task]')
 
-        (e.target).addEventListener("keydown", (e) =>{
+    const selection = window.getSelection();  
+    const range = document.createRange();  
+
+    if (position === "start") {
+        range.setStart(nextNode, 0);
+    }else{
+        
+        range.selectNodeContents(nextNode);
+        range.collapse(false);
+    }
+
+
+    selection.removeAllRanges();  
+    selection.addRange(range);
+    nextNode.focus();
+}
+
+/*====================================================================================================================================*/
+
+/* -----------: Agrega un task al array  */
+function addArray(e, index){
+    
+    todos[index] = {
+        id: index,
+        done: todos[index].done,
+        content: e.target.innerText.slice(0, getCaretIndex(e.target)),
+    }    
+}
+
+/* -----------: ELimina un task al array  */
+function deleteArray(index){
+    
+    for (let i = index; i < todos.length; i++) {
+        todos[i].id = i-1
+    }
+    todos.splice(index, 1);
+    printTodos()
+}
+
+/*====================================================================================================================================*/
+
+function enterKey(e,index){
+    
+    if (e.key == "Enter" && !e.shiftKey){
+        
+        /* -----------: Le doy enter, extraigo la plabra desde donde esta situado el cursor hasta el final de la palabra y la agrego en el content del sigiente task  */
+        let newContent = ""
+        if (getCaretIndex(e.target) < e.target.innerText.length)
+            newContent = e.target.innerText.slice(getCaretIndex(e.target), e.target.innerText.length)
+
+        todos.splice(index+1, 0,  {
+            id: index+1,
+            done: false,
+            content: newContent,
+        })
+        
+        console.log(e.target.innerText.length)
+        console.log(getCaretIndex(e.target))
             
-            if (e.key === "Backspace") {
-                deleteArray(index);
-                (index == 0) ? setCursor(index, "end") : setCursor(index-1, "end")
-                
-                e.preventDefault()
+        /* -----------: Mueve los id una posicion mas */
+        
+        for (let i = index+2; i < todos.length; i++) {
+            if (todos.length != 2){
+                todos[i].id = i
             }
-            else{
-                
-            }
+        }
+        
+        printTodos()
+        
+        setCursor(index+1,"start")
+        console.log(todos);
+        
+        
+    }
+}
+
+function deleteKey(e,index){
+    
+    /* -----------: Le doy delete, si el cursosr esta situado al incio elimino el task anterior */
+    if (getCaretIndex(e.target) === 0 && todos.length > 1){ 
+        
+        if (e.key === "Backspace") {
+            deleteArray(index);
+            (index == 0) ? setCursor(index, "end") : setCursor(index-1, "end")
+            
+        }
+        else{
+            
+        }
+     /*    (e.target).addEventListener("keydown", (e) =>{
+            e.preventDefault()
+            
 
         })
-            
+             */
             
     }
    
 }
 
+function keyup(e){
+    
+    let index = getTargetId(e)
 
+    if (index != -1) {
+        /* -----------: Cada vez que se levante una tecla, si el content sufre cambios estos se gurdaran en el array */
+        addArray(e,index)
+        
+        /* -----------: Acciones con el enter */
+        enterKey(e,index)
+        
+        /* -----------: Acciones con el delete */
+        deleteKey(e,index)
+        
+    }
 
+}
+
+/*====================================================================================================================================*/
+
+/* -----------: Devuelve true si se cliqueo en el elemento pasdo por parametro o en al algun sub elemento del mismo  */
+function getBoleanClick(e, index, element){
+    let item = ((container.children)[index])
+    let btn = item.querySelector(element)
+    let boleanSubElements = btn.contains(e.target)
+    return  boleanSubElements
+}
+
+function deleteBtn(e, index){
+    
+    if (getBoleanClick(e, index, '[todo-trash]') && todos.length > 1) {
+        deleteArray(index)
+    }
+}
+
+function checkBtn(e, index){
+
+    if (getBoleanClick(e, index, '[todo-check]')) {
+        todos[index].done = !todos[index].done
+        printTodos()
+    }
+
+}
 
 
 function click(e){
 
-    
-    /* Me da el id del elemnto que clickie */
-    
-    let newArray = Array.from(container.children)
-    let index = null
-    newArray.forEach(todoItem =>{
-        let todoItemClicked = todoItem.contains(e.target)
-        if(todoItemClicked) index = newArray.indexOf(todoItem);
-    })
-
-    console.log(index)
-    
+    let index = getTargetId(e)
     if (index !== null) {
-        let item = ((container.children)[index])
-        /*---------------------------------------------------*/
 
-        /* Borar */
-        
-        let btnTrash = item.querySelector('[todo-trash]')
-        let subTrashElements = btnTrash.contains(e.target)
+        /* -----------: Borra un elemento cuando se le da click al boton */
+        deleteBtn(e, index)
 
-        if (subTrashElements && todos.length > 1) {
-            deleteArray(index)
-        }
+        /* -----------: Marca como completado el task */
+        checkBtn(e, index)
 
-
-        /*---------------------------------------------------*/
-        /* Check */
-
-        let btnCheck = item.querySelector('[todo-check]')
-        let subCheckElements = btnCheck.contains(e.target)
-
-        if (subCheckElements) {
-            todos[index].done = !todos[index].done
-            printTodos()
-        }
         console.log(todos);
     }
 }
@@ -259,6 +244,49 @@ function click(e){
 
 
 
+
+
+
+/*====================================================================================================================================*/
+
+
+
+/* -----------: Contenedor de los items */
+let container = document.querySelector('[items-list]')
+
+/* -----------: Array que contiene todos los task */
+const todos = [{
+    id: 0,
+    done: false,
+    content: "",
+}]
+
+/* -----------: Imprimo los items */
+printTodos()
+
+/* -----------: Configuracion del MutationObserver */
+const config = {  
+    attributes: true,
+    characterData: true,
+    childList: true,
+    subtree: true,
+    attributeOldValue: true,
+    characterDataOldValue: true 
+};
+
+/* -----------: Observo los cambios en el contenedor */
+new MutationObserver((mutationsList) => {
+    
+    mutationsList.forEach(function(mutation) {
+
+        (mutation.target).addEventListener('keyup', keyup);
+        (mutation.target).addEventListener('click', click);
+
+    }); 
+
+}).observe(container, config)
+
+/*====================================================================================================================================*/
 
 
 
