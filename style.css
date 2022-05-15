@@ -6,10 +6,10 @@
   --cBrand3: #E8FFE6;
   --cBrand4: #1B1A21;
   
-  --cBrandVariant1: #FFDB57;
-  --cBrandVariant2: #393A4A;
-  --cBrandVariant3: #FE6262;
-  --cBrandVariant4: #25242E;
+  --cBrandVariant1: ;
+  --cBrandVariant2: ;
+  --cBrandVariant3: ;
+  --cBrandVariant4: #39383E;
 
   --container-custom: 1340px;
   --shadow-custom: 0px 4px 12px rgba(0, 0, 0, 0.16);
@@ -26,21 +26,62 @@ body{
   background-color: var(--cBrand4);
 }
 
-main{
-  position: absolute;
+
+header{
+  position: fixed;
+  width: 100px;
+  height: 56px;
+  left: 42px;
+  top: 42px;
+  z-index: 99999;
+  
+  background: #22B173;
+  border-radius: 12px;
+
 }
 
 .nav{
-  width: 80px;
-  height: 100vh;
 
+  position: fixed;
+  width: 100px;
+  height: calc(100vh - 172px);
+  left: 42px;
+  top: 130px;
+  z-index: 99999;
+
+  background: #1B1A21;
+  box-shadow: 0px 4px 8px 2px rgba(0, 0, 0, 0.16);
+  border-radius: 12px;
+
+}
+
+.nav__item{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px 20px 0px;
+  gap: 24px;
+}
+
+
+.nav__btn{
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 .board{
   position: absolute;
-  top: 50%;
-  left: 50%;
- 
+  top: 0;
+  left: 0;
+  width: 150vw;
+  height: 150vw;
+}
+
+.todoItem{
+  position: absolute;
+  left: 42px;
+  top: 130px;
+  z-index: 99999;
+  width: 350px;
 }
 
 [contenteditable="true"].task{

@@ -27,24 +27,23 @@ function taskItem(val){
 function todoItem(){
     const item =
     `  
-    <div id="todolist" class="todolist p-24 br-12 shadow bg-c4">
-        <h2 id="titletask" class="title f-st1 c-c3 mb-16" placeholder="Add a title..." contenteditable="true"></h2>
+    <div todoItem class="todoItem p-24 br-12 shadow bg-c4">
 
-        <ul items-list class="flex flex-column my-12">
-
-        </ul>
-
+    
+        <ul taskItems class="flex flex-column my-12"></ul>
+    
     </div>
     `
     return item
 }
 
+{/* <h2 id="titletask" class="title f-st1 c-c3 mb-16" placeholder="Add a title..." contenteditable="true"></h2> */}
 /* -----------: Imprime por pantalla los task (tareas) */
 function printTodos(){
-    let container = document.querySelector('[items-list]')
-    container.innerHTML = ""
+    let taskItems = document.querySelector('[taskItems]')
+    taskItems.innerHTML = ""
     for (let i = 0; i < todos.length; i++) {
-        container.insertAdjacentHTML('beforeend',taskItem(todos[i]));
+        taskItems.insertAdjacentHTML('beforeend',taskItem(todos[i]));
     }
 
 }
@@ -56,7 +55,7 @@ function printTodos(){
 /* -----------: Retorna el id del elemento con el que se interactuo */
 function getTargetId(e){
     let index = null
-    let tasksHtmlArray = Array.from(container.children)
+    let tasksHtmlArray = Array.from(document.querySelector('[taskItems]').children)
     tasksHtmlArray.forEach(todoItem =>{
         let todoItemClicked = todoItem.contains(e.target)
         if (todoItemClicked) 
@@ -104,7 +103,7 @@ function getCaretIndex(element) {
 }
 
 function setCursor(index, position){ 
-    let todosHtmlArray = Array.from(container.children)
+    let todosHtmlArray = Array.from(document.querySelector('[taskItems]').children)
     let nextNode = todosHtmlArray[index].querySelector('[todo-task]')
 
     const selection = window.getSelection();  
@@ -229,7 +228,7 @@ function keyup(e){
 
 /* -----------: Devuelve true si se cliqueo en el elemento pasdo por parametro o en al algun sub elemento del mismo  */
 function getBoleanClick(e, index, element){
-    let item = ((container.children)[index])
+    let item = ((document.querySelector('[taskItems]').children)[index])
     let btn = item.querySelector(element)
     let boleanSubElements = btn.contains(e.target)
     return  boleanSubElements
@@ -270,19 +269,7 @@ function click(e){
 
 
 
-
-
-
-
-
-
-
-
 /*====================================================================================================================================*/
-
-
-
-
 
 /* -----------: Array que contiene todos los task */
 const todos = [{
@@ -291,17 +278,7 @@ const todos = [{
     content: "",
 }]
 
-/* -----------: Configuracion del MutationObserver */
-const config = {  
-    attributes: true,
-    characterData: true,
-    childList: true,
-    subtree: true,
-    attributeOldValue: true,
-    characterDataOldValue: true 
-};
-
-
+/* -----------: posicion del item */
 let positions = {
     clientX: undefined,
     clientY: undefined,
@@ -309,63 +286,79 @@ let positions = {
     movementY: 0
 }
 
+let containerBoard = document.querySelector("[board]")
 
-let btnTodo = document.getElementById("btnTodo")
-let containerMain = document.querySelector("[board]")
 
-btnTodo.addEventListener('click', e =>{
-    containerMain.insertAdjacentHTML('beforeend',todoItem());
+
+/* -----------: Boton Todo */
+let btnTodo = document.querySelector("[btnTodo]")
+btnTodo.addEventListener('mousedown', e =>{  
     
-    let dragItem = document.getElementById("todolist")
-    /* -----------: Contenedor de los items */
-    let container = document.querySelector('[items-list]')
-    /* -----------: Imprimo los items */
+    
+    
+    containerBoard.insertAdjacentHTML('beforeend',todoItem());
     printTodos()
     
-    /* -----------: Observo los cambios en el contenedor */
-    new MutationObserver((mutationsList) => {
+    /* -----------: Muevo el elemento */
+        document.onmousemove = elementDrag;
+        document.onmouseup = closeDragElement;
         
-        mutationsList.forEach(function(mutation) {
-            
-            (mutation.target).addEventListener('keyup', keyup);
-            (mutation.target).addEventListener('click', click);
-
-        }); 
+        let dragItem = document.querySelector("[todoItem]")
+        dragItem.addEventListener('mousedown', function(event){
+            setTimeout(() => {
+                event.preventDefault()
+                // get the mouse cursor position at startup:
+                positions.clientX = event.clientX
+                positions.clientY = event.clientY
+                
+                document.onmousemove = elementDrag;
+                document.onmouseup = closeDragElement;
+            }, 10);
+        });
         
-    }).observe(container, config)
-
-    dragItem.addEventListener('mousedown', function(event){
-        setTimeout(() => {
+        
+        function elementDrag (event) {
             event.preventDefault()
-            // get the mouse cursor position at startup:
+            positions.movementY = positions.clientY - event.clientY
+            positions.movementX = positions.clientX - event.clientX
             positions.clientX = event.clientX
             positions.clientY = event.clientY
+            // set the element's new position:
+            dragItem.style.top = (dragItem.offsetTop - positions.movementY) + "px"
+            dragItem.style.left = (dragItem.offsetLeft - positions.movementX) + "px"
+        }
+        
+        function closeDragElement () {
+            document.onmouseup = null
+            document.onmousemove = null
+        }
+        
+        
+        let taskItems = document.querySelector('[taskItems]')
+        /*----------------------------------------------------------------*/
+        /* -----------: Observo los cambios en el contenedor */
+        
+        new MutationObserver((mutationsList) => {
+            mutationsList.forEach(function(mutation) {
+                
+                (mutation.target).addEventListener('keyup', keyup);
+                (mutation.target).addEventListener('click', click);
+    
+            }); 
             
-            document.onmousemove = elementDrag;
-            document.onmouseup = closeDragElement;
-        }, 10);
-    });
+        }).observe(taskItems, {  
+            attributes: true,
+            characterData: true,
+            childList: true,
+            subtree: true,
+            attributeOldValue: true,
+            characterDataOldValue: true 
+        })
+       
+    
 });
 
-
 /*====================================================================================================================================*/
-
-function elementDrag (event) {
-    event.preventDefault()
-    positions.movementY = positions.clientY - event.clientY
-    positions.movementX = positions.clientX - event.clientX
-    positions.clientX = event.clientX
-    positions.clientY = event.clientY
-    // set the element's new position:
-    containerMain.style.top = (containerMain.offsetTop - positions.movementY) + "px"
-    containerMain.style.left = (containerMain.offsetLeft - positions.movementX) + "px"
-}
-
-function closeDragElement () {
-    document.onmouseup = null
-    document.onmousemove = null
-}
-
 
 
 
