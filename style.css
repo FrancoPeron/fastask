@@ -26,7 +26,22 @@ body{
   background-color: var(--cBrand4);
 }
 
+main{
+  position: absolute;
+}
 
+.nav{
+  width: 80px;
+  height: 100vh;
+
+}
+
+.board{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+ 
+}
 
 [contenteditable="true"].task{
   outline: none;
@@ -96,5 +111,5 @@ input[type='checkbox']:checked:after {
 }
 
 .todolist{
-  width: 500px;
+  width: 400px;
 }

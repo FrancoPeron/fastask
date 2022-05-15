@@ -24,15 +24,32 @@ function taskItem(val){
     return item
 }
 
+function todoItem(){
+    const item =
+    `  
+    <div id="todolist" class="todolist p-24 br-12 shadow bg-c4">
+        <h2 id="titletask" class="title f-st1 c-c3 mb-16" placeholder="Add a title..." contenteditable="true"></h2>
+
+        <ul items-list class="flex flex-column my-12">
+
+        </ul>
+
+    </div>
+    `
+    return item
+}
+
 /* -----------: Imprime por pantalla los task (tareas) */
 function printTodos(){
-
+    let container = document.querySelector('[items-list]')
     container.innerHTML = ""
     for (let i = 0; i < todos.length; i++) {
         container.insertAdjacentHTML('beforeend',taskItem(todos[i]));
     }
 
 }
+
+/*====================================================================================================================================*/
 
 /*====================================================================================================================================*/
 
@@ -66,7 +83,21 @@ function getCaretIndex(element) {
             // And set the range end to the original clicked position
             preCaretRange.setEnd(range.endContainer, range.endOffset);
             // Return the text length from contenteditable start to the range end
-            position = preCaretRange.toString().length;
+            /* if (range.endContainer.previousSibling != null) {
+                console.log(preCaretRange.toString() + "ñ")
+                console.log(range.toString())
+            } */
+            if (preCaretRange.startContainer.innerText.includes("\n")) {
+                
+                position = preCaretRange.toString().length + 1;
+            }else{
+
+                position = preCaretRange.toString().length;
+            }
+            console.log("d",selection.focusOffset)
+            console.log(preCaretRange.toString().length)
+            console.log(position)
+
         }
     }
     return position;
@@ -251,8 +282,7 @@ function click(e){
 
 
 
-/* -----------: Contenedor de los items */
-let container = document.querySelector('[items-list]')
+
 
 /* -----------: Array que contiene todos los task */
 const todos = [{
@@ -260,9 +290,6 @@ const todos = [{
     done: false,
     content: "",
 }]
-
-/* -----------: Imprimo los items */
-printTodos()
 
 /* -----------: Configuracion del MutationObserver */
 const config = {  
@@ -274,19 +301,97 @@ const config = {
     characterDataOldValue: true 
 };
 
-/* -----------: Observo los cambios en el contenedor */
-new MutationObserver((mutationsList) => {
+
+let positions = {
+    clientX: undefined,
+    clientY: undefined,
+    movementX: 0,
+    movementY: 0
+}
+
+
+let btnTodo = document.getElementById("btnTodo")
+let containerMain = document.querySelector("[board]")
+
+btnTodo.addEventListener('click', e =>{
+    containerMain.insertAdjacentHTML('beforeend',todoItem());
     
-    mutationsList.forEach(function(mutation) {
+    let dragItem = document.getElementById("todolist")
+    /* -----------: Contenedor de los items */
+    let container = document.querySelector('[items-list]')
+    /* -----------: Imprimo los items */
+    printTodos()
+    
+    /* -----------: Observo los cambios en el contenedor */
+    new MutationObserver((mutationsList) => {
+        
+        mutationsList.forEach(function(mutation) {
+            
+            (mutation.target).addEventListener('keyup', keyup);
+            (mutation.target).addEventListener('click', click);
 
-        (mutation.target).addEventListener('keyup', keyup);
-        (mutation.target).addEventListener('click', click);
+        }); 
+        
+    }).observe(container, config)
 
-    }); 
+    dragItem.addEventListener('mousedown', function(event){
+        setTimeout(() => {
+            event.preventDefault()
+            // get the mouse cursor position at startup:
+            positions.clientX = event.clientX
+            positions.clientY = event.clientY
+            
+            document.onmousemove = elementDrag;
+            document.onmouseup = closeDragElement;
+        }, 10);
+    });
+});
 
-}).observe(container, config)
 
 /*====================================================================================================================================*/
+
+function elementDrag (event) {
+    event.preventDefault()
+    positions.movementY = positions.clientY - event.clientY
+    positions.movementX = positions.clientX - event.clientX
+    positions.clientX = event.clientX
+    positions.clientY = event.clientY
+    // set the element's new position:
+    containerMain.style.top = (containerMain.offsetTop - positions.movementY) + "px"
+    containerMain.style.left = (containerMain.offsetLeft - positions.movementX) + "px"
+}
+
+function closeDragElement () {
+    document.onmouseup = null
+    document.onmousemove = null
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
