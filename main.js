@@ -132,7 +132,9 @@ function addArray(e, index){
         id: index,
         done: todos[index].done,
         content: e.target.innerText.slice(0, getCaretIndex(e.target)),
-    }    
+    }
+
+    localStorage.setItem('todos', JSON.stringify(todos));
 }
 
 /* -----------: ELimina un task al array  */
@@ -142,6 +144,8 @@ function deleteArray(index){
         todos[i].id = i-1
     }
     todos.splice(index, 1);
+
+    localStorage.setItem('todos', JSON.stringify(todos));
     printTodos()
 }
 
@@ -247,6 +251,7 @@ function checkBtn(e, index){
         todos[index].done = !todos[index].done
         printTodos()
     }
+    localStorage.setItem('todos', JSON.stringify(todos));
 
 }
 
@@ -266,17 +271,76 @@ function click(e){
     }
 }
 
+/*====================================================================================================================================*/
 
 
+function mutObs() {
+    
+    let taskItems = document.querySelector('[taskItems]')
+    /*----------------------------------------------------------------*/
+    /* -----------: Observo los cambios en el contenedor */
+    
+    new MutationObserver((mutationsList) => {
+        mutationsList.forEach(function(mutation) {
+            
+            (mutation.target).addEventListener('keyup', keyup);
+            (mutation.target).addEventListener('click', click);
+    
+        }); 
+        
+    }).observe(taskItems, {  
+        attributes: true,
+        characterData: true,
+        childList: true,
+        subtree: true,
+        attributeOldValue: true,
+        characterDataOldValue: true 
+    })
+}
+
+function drag(){
+
+
+    let dragItem = document.querySelector("[todoItem]")
+    
+    dragItem.addEventListener('mousedown', function(event){
+        setTimeout(() => {
+            event.preventDefault()
+            // get the mouse cursor position at startup:
+            positions.clientX = event.clientX
+            positions.clientY = event.clientY
+            
+            document.onmousemove = elementDrag;
+            document.onmouseup = closeDragElement;
+        }, 10);
+    });
+
+
+    function elementDrag (event) {
+        event.preventDefault()
+        positions.movementY = positions.clientY - event.clientY
+        positions.movementX = positions.clientX - event.clientX
+        positions.clientX = event.clientX
+        positions.clientY = event.clientY
+        // set the element's new position:
+        dragItem.style.top = (dragItem.offsetTop - positions.movementY) + "px"
+        dragItem.style.left = (dragItem.offsetLeft - positions.movementX) + "px"
+
+        localStorage.setItem('posY', dragItem.style.top);
+        localStorage.setItem('posX', dragItem.style.left);
+    }
+
+    function closeDragElement () {
+        document.onmouseup = null
+        document.onmousemove = null
+    }
+
+}
 
 /*====================================================================================================================================*/
 
 /* -----------: Array que contiene todos los task */
-const todos = [{
-    id: 0,
-    done: false,
-    content: "",
-}]
+let todos = []
 
 /* -----------: posicion del item */
 let positions = {
@@ -289,82 +353,38 @@ let positions = {
 let containerBoard = document.querySelector("[board]")
 
 
+todos = JSON.parse(localStorage.getItem("todos")) || [{
+    id: 0,
+    done: false,
+    content: "",
+}]
+if (todos.length > 1 && todos[0].content != "") {
+    
+    containerBoard.insertAdjacentHTML('beforeend',todoItem());
+    printTodos()
+    
+    let dragItem = document.querySelector("[todoItem]")
+    dragItem.style.top = localStorage.getItem("posY")
+    dragItem.style.left = localStorage.getItem("posX")
+
+    drag()
+    mutObs()
+}
+
 
 /* -----------: Boton Todo */
 let btnTodo = document.querySelector("[btnTodo]")
 btnTodo.addEventListener('mousedown', e =>{  
     
-    
-    
     containerBoard.insertAdjacentHTML('beforeend',todoItem());
-    printTodos()
-    
-    /* -----------: Muevo el elemento */
-        document.onmousemove = elementDrag;
-        document.onmouseup = closeDragElement;
-        
-        let dragItem = document.querySelector("[todoItem]")
-        dragItem.addEventListener('mousedown', function(event){
-            setTimeout(() => {
-                event.preventDefault()
-                // get the mouse cursor position at startup:
-                positions.clientX = event.clientX
-                positions.clientY = event.clientY
-                
-                document.onmousemove = elementDrag;
-                document.onmouseup = closeDragElement;
-            }, 10);
-        });
-        
-        
-        function elementDrag (event) {
-            event.preventDefault()
-            positions.movementY = positions.clientY - event.clientY
-            positions.movementX = positions.clientX - event.clientX
-            positions.clientX = event.clientX
-            positions.clientY = event.clientY
-            // set the element's new position:
-            dragItem.style.top = (dragItem.offsetTop - positions.movementY) + "px"
-            dragItem.style.left = (dragItem.offsetLeft - positions.movementX) + "px"
-        }
-        
-        function closeDragElement () {
-            document.onmouseup = null
-            document.onmousemove = null
-        }
-        
-        
-        let taskItems = document.querySelector('[taskItems]')
-        /*----------------------------------------------------------------*/
-        /* -----------: Observo los cambios en el contenedor */
-        
-        new MutationObserver((mutationsList) => {
-            mutationsList.forEach(function(mutation) {
-                
-                (mutation.target).addEventListener('keyup', keyup);
-                (mutation.target).addEventListener('click', click);
-    
-            }); 
-            
-        }).observe(taskItems, {  
-            attributes: true,
-            characterData: true,
-            childList: true,
-            subtree: true,
-            attributeOldValue: true,
-            characterDataOldValue: true 
-        })
-       
-    
+    printTodos()    
+    drag()
+    mutObs()
 });
 
+
+
 /*====================================================================================================================================*/
-
-
-
-
-
-
 
 
 

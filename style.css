@@ -74,12 +74,14 @@ header{
   left: 0;
   width: 150vw;
   height: 150vw;
+
+  background-image: url(./assets/img/grid.svg);
 }
 
 .todoItem{
   position: absolute;
-  left: 42px;
-  top: 130px;
+  left: 62px;
+  top: 120px;
   z-index: 99999;
   width: 350px;
 }
