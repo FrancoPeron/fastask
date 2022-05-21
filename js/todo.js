@@ -3,26 +3,33 @@
 class ToDoList extends HTMLElement {
     constructor() {
         super();
-        this.todos = [{
+        this.todos = JSON.parse(localStorage.getItem(`${this.getAttribute("id")}`)) || [{
             id: 0,
             done: false,
             content: "",
         }]
+
+        this.firstPos = JSON.parse(localStorage.getItem(`${this.getAttribute("id")}Pos`)) || {
+            posY: "120px",
+            posX: "62px"
+        }
 
         this.positions = {
             clientX: undefined,
             clientY: undefined,
             movementX: 0,
             movementY: 0
-        }
-        
+        }        
         
     }
 
     connectedCallback() {
-        console.log('Todo ADDED TO THE DOM');
+        console.log(`${this.getAttribute("id")} ADDED TO THE DOM`);
         console.log(this);
 
+        this.style.top = this.firstPos.posY
+        this.style.left = this.firstPos.posX
+        
         this.printTodos();
         this.drag()
         
@@ -87,7 +94,7 @@ class ToDoList extends HTMLElement {
                 this.positions.clientX = event.clientX
 
                 document.onmousemove = (event)=> {
-        
+                    
                     console.log()
                     event.preventDefault()
                     this.positions.movementY = this.positions.clientY - event.clientY
@@ -97,9 +104,14 @@ class ToDoList extends HTMLElement {
                     // set the element's new position:
                     this.style.top = ( this.offsetTop - this.positions.movementY) + "px"
                     this.style.left = ( this.offsetLeft - this.positions.movementX) + "px"
-            
-                    //localStorage.setItem('posY', this.dragItem.style.top);
-                    //localStorage.setItem('posX', this.dragItem.style.left);
+
+                    let pos = {
+                        posY: this.style.top,
+                        posX: this.style.left
+                    }
+                    
+                    localStorage.setItem(`${this.getAttribute("id")}Pos`, JSON.stringify(pos));
+                    
                 }
                 document.onmouseup = ()=> {
                     document.onmouseup = null
@@ -237,7 +249,7 @@ class ToDoList extends HTMLElement {
             done: false,
             content: e.target.innerText
         }
-        //localStorage.setItem('todos', JSON.stringify(todos));
+        localStorage.setItem(`${this.getAttribute("id")}`, JSON.stringify(this.todos));
     }
 
     /* -----------: ELimina un task al array  */
@@ -246,23 +258,23 @@ class ToDoList extends HTMLElement {
         for (let i = index; i < this.todos.length; i++) {
             this.todos[i].id = i-1
         }
+
         this.todos.splice(index, 1);
-    
-        //localStorage.setItem('todos', JSON.stringify(todos));
         this.printTodos()
+    
+        localStorage.setItem(`${this.getAttribute("id")}`, JSON.stringify(this.todos));
     }
 
+    /* -----------: Guarda si el tas esta completado o no  */
     checkBtn(e, index){
 
         if (this.getBoleanClick(e, index, '[todo-check]')) {
             this.todos[index].done = !this.todos[index].done
             this.printTodos()
         }
-        //localStorage.setItem('todos', JSON.stringify(todos));
+        localStorage.setItem(`${this.getAttribute("id")}`, JSON.stringify(this.todos));
     
     }
-    
-    
 
     /*====================================================================================================================================*/
 
@@ -299,8 +311,14 @@ window.customElements.define('todo-item', ToDoList);
 
 let containerMain = document.querySelector("[board]");
 let btnTodo = (document.querySelector("[btnTodo]"))
+let todoId = JSON.parse(localStorage.getItem('cantTodos')) || 0;
+
+for (let index = 0; index < JSON.parse(localStorage.getItem('cantTodos')) ; index++) {
+    containerMain.insertAdjacentHTML('beforeend',`<todo-item todoItem id="todo${index}" class="todoItem p-24 br-12 shadow bg-c4"></todo-item>`);
+}
+
 btnTodo.addEventListener('mousedown', e =>{
-    console.log(2)
-    containerMain.insertAdjacentHTML('beforeend','<todo-item todoItem class="todoItem p-24 br-12 shadow bg-c4" ></todo-item>');
+    containerMain.insertAdjacentHTML('beforeend',`<todo-item todoItem id="todo${todoId++}" class="todoItem p-24 br-12 shadow bg-c4"></todo-item>`);
+    localStorage.setItem('cantTodos', JSON.stringify(todoId));
     
 });
