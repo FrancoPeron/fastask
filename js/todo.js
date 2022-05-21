@@ -21,6 +21,8 @@ class ToDoList extends HTMLElement {
 
     connectedCallback() {
         console.log('Todo ADDED TO THE DOM');
+        console.log(this);
+
         this.printTodos();
         this.drag()
         
@@ -67,7 +69,7 @@ class ToDoList extends HTMLElement {
             container.insertAdjacentHTML('beforeend',this.taskItem(i));
         }
         console.log(this.todos)
-
+        
         this.obsChanges()
     
     }
