@@ -93,9 +93,9 @@ function getCaretIndex(element) {
 
                 position = preCaretRange.toString().length;
             }
-            console.log("d",selection.focusOffset)
-            console.log(preCaretRange.toString().length)
-            console.log(position)
+            //console.log("d",selection.focusOffset)
+            //console.log(preCaretRange.toString().length)
+            //console.log(position)
 
         }
     }

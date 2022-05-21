@@ -15,21 +15,16 @@ class ToDoList extends HTMLElement {
             movementX: 0,
             movementY: 0
         }
-
-        this.dragItem = document.querySelector("[todoItem]")
-        this.dragItems = document.querySelectorAll("[todoItem]")
-
         
         
     }
 
     connectedCallback() {
         console.log('Todo ADDED TO THE DOM');
-        this.todoItem();
         this.printTodos();
         this.drag()
         
-        console.log(this.dragItems)
+        //console.log(this.dragItems)
     }
 
     disconnectedCallback() {
@@ -38,15 +33,7 @@ class ToDoList extends HTMLElement {
 
     /* metodos */
 
-    todoItem(){
-        this.innerHTML =
-            `
-                <p id="titletask" class="title f-st1 c-c3 mb-16" placeholder="Add a title..." contenteditable="true"></p>
-
-                <ul items-list class="flex flex-column my-12"></ul>
-            `
-        ;
-    }
+    /*====================================================================================================================================*/
 
     taskItem(i){
         const item =  
@@ -72,66 +59,239 @@ class ToDoList extends HTMLElement {
     }
 
     printTodos(){
-        let container = document.querySelector('[items-list]')
+        this.innerHTML =`<ul taskItems class="flex flex-column my-12"></ul>`
+        // <p id="titletask" class="title f-st1 c-c3 mb-16" placeholder="Add a title..." contenteditable="true"></p>
+        let container = this.querySelector('[taskItems]')
         container.innerHTML = ""
         for (let i = 0; i < this.todos.length; i++) {
             container.insertAdjacentHTML('beforeend',this.taskItem(i));
         }
+        console.log(this.todos)
+
+        this.obsChanges()
     
     }
+
+    /*====================================================================================================================================*/
 
     drag(){
 
-        this.dragItems.forEach(dragItem => dragItem.addEventListener('mousedown', function(event){
+        this.addEventListener('mousedown', function(event){
             setTimeout(() => {
                 event.preventDefault();
-                console.log(this)
+                //console.log(this)
                 // get the mouse cursor position at startup:
                 this.positions.clientY = event.clientY
                 this.positions.clientX = event.clientX
 
-                document.onmousemove = this.elementDrag;
-                document.onmouseup = this.closeDragElement;
+                document.onmousemove = (event)=> {
+        
+                    console.log()
+                    event.preventDefault()
+                    this.positions.movementY = this.positions.clientY - event.clientY
+                    this.positions.movementX = this.positions.clientX - event.clientX
+                    this.positions.clientX = event.clientX
+                    this.positions.clientY = event.clientY
+                    // set the element's new position:
+                    this.style.top = ( this.offsetTop - this.positions.movementY) + "px"
+                    this.style.left = ( this.offsetLeft - this.positions.movementX) + "px"
+            
+                    //localStorage.setItem('posY', this.dragItem.style.top);
+                    //localStorage.setItem('posX', this.dragItem.style.left);
+                }
+                document.onmouseup = ()=> {
+                    document.onmouseup = null
+                    document.onmousemove = null
+                }
 
             }, 10);
-        }))
-     /*    this.dragItem.addEventListener('mousedown', function(event){
-            setTimeout(() => {
-                event.preventDefault();
-                // get the mouse cursor position at startup:
-                this.positions.clientY = event.clientY
-                this.positions.clientX = event.clientX
-
-                document.onmousemove = this.elementDrag;
-                document.onmouseup = this.closeDragElement;
-
-            }, 10);
-        }); */
-        
-        
-        
-    }
-    elementDrag = (event)=> {
-        
-        console.log()
-        event.preventDefault()
-        this.positions.movementY = this.positions.clientY - event.clientY
-        this.positions.movementX = this.positions.clientX - event.clientX
-        this.positions.clientX = event.clientX
-        this.positions.clientY = event.clientY
-        // set the element's new position:
-        this.style.top = ( this.offsetTop - this.positions.movementY) + "px"
-        this.style.left = ( this.offsetLeft - this.positions.movementX) + "px"
-
-        localStorage.setItem('posY', this.dragItem.style.top);
-        localStorage.setItem('posX', this.dragItem.style.left);
+        })
     }
 
-    closeDragElement = ()=> {
-        document.onmouseup = null
-        document.onmousemove = null
+    /*====================================================================================================================================*/
+
+    obsChanges() {
+    
+        let taskItems = this.querySelector('[taskItems]')
+        console.log(taskItems)
+        /*----------------------------------------------------------------*/
+        /* -----------: Observo los cambios en el contenedor */
+
+        taskItems.addEventListener('keydown', (e)=>{
+            let index = this.getTargetId(e)
+            if (index != -1) {
+            
+                /* -----------: Acciones con el enter */
+                this.enterKey(e,index)
+                
+                /* -----------: Acciones con el delete */
+                //deleteKey(e,index)
+                
+            }
+        });
+
+            
+        taskItems.addEventListener('keyup', (e)=>{
+            let index = this.getTargetId(e)        
+            if (index != -1) {
+                /* -----------: Cada vez que se levante una tecla, si el content sufre cambios estos se gurdaran en el array */
+                this.addArray(e,index)
+            }
+        });
+
+        taskItems.addEventListener('click', (e)=>{
+            let index = this.getTargetId(e)
+            if (index != -1) {
+                
+                /* -----------: Borra un elemento cuando se le da click al boton */
+                if (this.getBoleanClick(e, index, '[todo-trash]') && this.todos.length > 1) {
+                    this.deleteArray(index)
+                }
+
+                /* -----------: Marca como completado el task */
+                this.checkBtn(e, index)
+
+
+            }
+        });
+
+    }
+
+    /*====================================================================================================================================*/
+
+    /* -----------: Retorna la posicion del cursor de un item */
+    getTargetId = (e)=>{
+        let index = null
+        let tasksHtmlArray = Array.from(this.querySelector('[taskItems]').children)
+        tasksHtmlArray.forEach(todoItem =>{
+            if (todoItem.contains(e.target)) index = tasksHtmlArray.indexOf(todoItem);
+        })
+        return index
+    
+    }
+
+    /* -----------: Devuelve true si se cliqueo en el elemento pasdo por parametro o en al algun sub elemento del mismo  */
+    getBoleanClick(e, index, element){
+        let item = ((this.querySelector('[taskItems]').children)[index])
+        let btn = item.querySelector(element)
+        let boleanSubElements = btn.contains(e.target)
+        return  boleanSubElements
+    }
+
+    /* -----------: Coloca el cursor en en siguiente task*/
+    setCursor(index, position){ 
+        let todosHtmlArray = Array.from(this.querySelector('[taskItems]').children)
+        let nextNode = todosHtmlArray[index].querySelector('[todo-task]')
+    
+        const selection = window.getSelection();  
+        const range = document.createRange();  
+    
+        if (position === "start") {
+            range.setStart(nextNode, 0);
+        }else{
+            range.selectNodeContents(nextNode);
+            range.collapse(false);
+        }
+        selection.removeAllRanges();  
+        selection.addRange(range);
+        nextNode.focus();
+    }
+
+    getCaretIndex(element) {
+        let position = 0;
+        const isSupported = typeof window.getSelection !== "undefined";
+        if (isSupported) {
+            const selection = window.getSelection();
+            
+            if (selection.rangeCount !== 0) {
+            
+                const range = window.getSelection().getRangeAt(0);
+                const preCaretRange = range.cloneRange();
+                preCaretRange.selectNodeContents(element);
+                preCaretRange.setEnd(range.endContainer, range.endOffset);
+                if (preCaretRange.startContainer.innerText.includes("\n")) {
+                    
+                    position = preCaretRange.toString().length + 1;
+                }else{
+    
+                    position = preCaretRange.toString().length;
+                }
+                //console.log("d",selection.focusOffset)
+                //console.log(preCaretRange.toString().length)
+                //console.log(position)
+    
+            }
+        }
+        return position;
     }
     
+    /*====================================================================================================================================*/
+
+    /* -----------: Agrega un task al array  */
+    addArray(e, index){
+        
+        this.todos[index] = {
+            id: index,
+            done: false,
+            content: e.target.innerText
+        }
+        //localStorage.setItem('todos', JSON.stringify(todos));
+    }
+
+    /* -----------: ELimina un task al array  */
+    deleteArray(index){
+    
+        for (let i = index; i < this.todos.length; i++) {
+            this.todos[i].id = i-1
+        }
+        this.todos.splice(index, 1);
+    
+        //localStorage.setItem('todos', JSON.stringify(todos));
+        this.printTodos()
+    }
+
+    checkBtn(e, index){
+
+        if (this.getBoleanClick(e, index, '[todo-check]')) {
+            this.todos[index].done = !this.todos[index].done
+            this.printTodos()
+        }
+        //localStorage.setItem('todos', JSON.stringify(todos));
+    
+    }
+    
+    
+
+    /*====================================================================================================================================*/
+
+    enterKey(e,index){
+    
+        if (e.key == "Enter" && !e.shiftKey){
+            e.preventDefault()
+            this.todos.splice(index+1, 0,  {
+                id: index+1,
+                done: false,
+                content: "",
+            })
+
+            /* -----------: Mueve los id una posicion mas */
+            for (let i = index+2; i < this.todos.length; i++) {
+                if (this.todos.length != 2){
+                    this.todos[i].id = i
+                }
+            }
+            
+            this.printTodos()
+            
+            this.setCursor(index+1,"start")
+            console.log(this.todos);
+            
+            
+        }
+    }
+
+    /*====================================================================================================================================*/
+
 }
 window.customElements.define('todo-item', ToDoList);
 
