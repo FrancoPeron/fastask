@@ -47,7 +47,7 @@ class ToDoList extends HTMLElement {
     taskItem(i){
         const item =  
             `   
-            <li id="task${this.todos[i].id}" class="task-item flex flex-row justify-between align-items-start mb-8">
+            <li id="task${this.todos[i].id}" class="task-item flex flex-row justify-between align-items-start my-4">
 
                 <div class="flex flex-row align-items-start flex-fill">
                     <input todo-check class="checkbox mr-12 mt-4" type="checkbox" ${(this.todos[i].done) ? "checked": ""}>
@@ -68,7 +68,7 @@ class ToDoList extends HTMLElement {
     }
 
     printTodos(){
-        this.innerHTML =`<ul taskItems class="flex flex-column my-12"></ul>`
+        this.innerHTML =`<ul taskItems class="flex flex-column"></ul>`
         // <p id="titletask" class="title f-st1 c-c3 mb-16" placeholder="Add a title..." contenteditable="true"></p>
         let container = this.querySelector('[taskItems]')
         container.innerHTML = ""
@@ -308,17 +308,3 @@ class ToDoList extends HTMLElement {
 
 }
 window.customElements.define('todo-item', ToDoList);
-
-let containerMain = document.querySelector("[board]");
-let btnTodo = (document.querySelector("[btnTodo]"))
-let todoId = JSON.parse(localStorage.getItem('cantTodos')) || 0;
-
-for (let index = 0; index < JSON.parse(localStorage.getItem('cantTodos')) ; index++) {
-    containerMain.insertAdjacentHTML('beforeend',`<todo-item todoItem id="todo${index}" class="todoItem p-24 br-12 shadow bg-c4"></todo-item>`);
-}
-
-btnTodo.addEventListener('mousedown', e =>{
-    containerMain.insertAdjacentHTML('beforeend',`<todo-item todoItem id="todo${todoId++}" class="todoItem p-24 br-12 shadow bg-c4"></todo-item>`);
-    localStorage.setItem('cantTodos', JSON.stringify(todoId));
-    
-});
