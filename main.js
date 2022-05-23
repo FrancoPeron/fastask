@@ -1,4 +1,5 @@
 
+
 let containerMain = document.querySelector("[board]");
 let btnTodo = (document.querySelector("[btnTodo]"))
 let todoId = JSON.parse(localStorage.getItem('cantTodos')) || 0;
@@ -12,3 +13,4 @@ btnTodo.addEventListener('mousedown', e =>{
     localStorage.setItem('cantTodos', JSON.stringify(todoId));
     
 });
+

@@ -27,7 +27,7 @@ body{
 }
 
 
-header{
+.header{
   position: fixed;
   width: 100px;
   height: 56px;
@@ -82,7 +82,7 @@ header{
   position: absolute;
   left: 62px;
   top: 120px;
-  z-index: 99999;
+  z-index: 99;
   width: 350px;
 }
 
