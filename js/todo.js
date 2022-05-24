@@ -10,8 +10,8 @@ class ToDoList extends HTMLElement {
         }]
 
         this.firstPos = JSON.parse(localStorage.getItem(`${this.getAttribute("id")}Pos`)) || {
-            posY: "120px",
-            posX: "62px"
+            posY: "130px",
+            posX: "160px"
         }
 
         this.positions = {
