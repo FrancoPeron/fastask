@@ -19,19 +19,22 @@ class ToDoList extends HTMLElement {
             clientY: undefined,
             movementX: 0,
             movementY: 0
-        }        
+        }
+        
+        this.trash = document.querySelector("[btnTrash]")
         
     }
 
     connectedCallback() {
         console.log(`${this.getAttribute("id")} ADDED TO THE DOM`);
-        console.log(this);
+        //console.log(this);
 
         this.style.top = this.firstPos.posY
         this.style.left = this.firstPos.posX
         
         this.printTodos();
         this.drag()
+        //this.setCursor(1,"start")
         
         //console.log(this.dragItems)
     }
@@ -50,7 +53,7 @@ class ToDoList extends HTMLElement {
             <li id="task${this.todos[i].id}" class="task-item flex flex-row justify-between align-items-start my-4">
 
                 <div class="flex flex-row align-items-start flex-fill">
-                    <input todo-check class="checkbox mr-12 mt-4" type="checkbox" ${(this.todos[i].done) ? "checked": ""}>
+                    <input todo-check class="checkbox mr-16 mt-4" type="checkbox" ${(this.todos[i].done) ? "checked": ""}>
                     <p todo-task class="task fw-6 f-b1 c-g1" placeholder="Add a task..." contenteditable="true" tabindex="1">${this.todos[i].content}</p>
                 </div>
                 
@@ -61,6 +64,12 @@ class ToDoList extends HTMLElement {
                         <path class="trash-b" d="M0,0H18L16,17a3,3,0,0,1-3,3H5a3,3,0,0,1-3-3Z" transform="translate(93.5 867)"/>
                     </g>
                 </svg>
+
+                <!-- <div class="flex flex-row justify-end">
+                <button class="btn-text b-trans f-b2 fw-6 c-c1 ml-8" @click="removeAllTodos">Remove All</button>
+                <button class="btn-text b-trans f-b2 fw-6 c-c1 ml-8" @click="markAllDone">Mark All</button>
+            
+              </div> -->
                 
             </li>
             `
@@ -75,7 +84,7 @@ class ToDoList extends HTMLElement {
         for (let i = 0; i < this.todos.length; i++) {
             container.insertAdjacentHTML('beforeend',this.taskItem(i));
         }
-        console.log(this.todos)
+        //console.log(this.todos)
         
         this.obsChanges()
     
@@ -88,14 +97,12 @@ class ToDoList extends HTMLElement {
         this.addEventListener('mousedown', function(event){
             setTimeout(() => {
                 event.preventDefault();
-                //console.log(this)
-                // get the mouse cursor position at startup:
+
                 this.positions.clientY = event.clientY
                 this.positions.clientX = event.clientX
 
                 document.onmousemove = (event)=> {
-                    
-                    console.log()
+
                     event.preventDefault()
                     this.positions.movementY = this.positions.clientY - event.clientY
                     this.positions.movementX = this.positions.clientX - event.clientX
@@ -111,11 +118,44 @@ class ToDoList extends HTMLElement {
                     }
                     
                     localStorage.setItem(`${this.getAttribute("id")}Pos`, JSON.stringify(pos));
+
+                    let delate = this.trash.getBoundingClientRect().top < event.clientY && event.clientY < this.trash.getBoundingClientRect().bottom && 
+                    this.trash.getBoundingClientRect().left < event.clientX && event.clientX < this.trash.getBoundingClientRect().right
+
+                    if (delate) {
+                        this.style.opacity = ".8"
+                    }
+                    else{
+                        
+                        this.style.opacity = "1"
+                    }
                     
                 }
-                document.onmouseup = ()=> {
+                document.onmouseup = (event)=> {
                     document.onmouseup = null
                     document.onmousemove = null
+
+                    let delate = this.trash.getBoundingClientRect().top < event.clientY && event.clientY < this.trash.getBoundingClientRect().bottom && 
+                    this.trash.getBoundingClientRect().left < event.clientX && event.clientX < this.trash.getBoundingClientRect().right
+                    if (delate) {
+                        //this.style.opacity = ".8"
+                        let todosItemArray = document.querySelectorAll("[todoItem]")
+                        let thisId = Number(this.getAttribute("id").replace( /^\D+/g, ''))
+                        console.log(thisId)
+                        this.remove()
+                        
+                        localStorage.setItem('cantTodos', localStorage.getItem('cantTodos')-1);    
+                        for (let index = thisId; index < localStorage.getItem('cantTodos'); index++) {
+                            localStorage.setItem(`todo${index}`, localStorage.getItem(`todo${index+1}`));
+                            localStorage.setItem(`todo${index}Pos`, localStorage.getItem(`todo${index+1}Pos`));
+                            todosItemArray[index+1].id = `todo${index}`
+                        }
+                        localStorage.removeItem(`todo${localStorage.getItem('cantTodos')}`)
+                        localStorage.removeItem(`todo${localStorage.getItem('cantTodos')}Pos`)
+
+                    }
+
+                    
                 }
 
             }, 10);
@@ -127,7 +167,7 @@ class ToDoList extends HTMLElement {
     obsChanges() {
     
         let taskItems = this.querySelector('[taskItems]')
-        console.log(taskItems)
+        //console.log(taskItems)
         /*----------------------------------------------------------------*/
         /* -----------: Observo los cambios en el contenedor */
 

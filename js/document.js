@@ -14,7 +14,9 @@ class Document extends HTMLElement {
             clientY: undefined,
             movementX: 0,
             movementY: 0
-        }        
+        }
+        
+        this.main = document.getElementsByTagName("main")[0]
         
     }
 
@@ -96,27 +98,28 @@ class Document extends HTMLElement {
     printTodos(){
         this.innerHTML =`
 
-            <div docItem>
+           
                 <img btnModal class="doc__img" src="./assets/img/documentBtn.svg" alt="">
-                <div class="modal micromodal-slide" id="${this.getAttribute("id")}item" aria-hidden="true">
-                    <div class="modal__overlay" tabindex="-1">
-                        <div class="modal__container bg-c4 br-12 mx-24" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
-                        <header class="modal__header px-24 py-28">
-                            <h2 id="modal-1-title" class="title f-st1 c-white" placeholder="Add a title..." contenteditable="true">New Document</h2>
-                            <button class="modal__close c-white" aria-label="Close modal" data-micromodal-close/>
-                        </header>
-                        <main class="modal__content c-white" id="modal-1-content">
-                            <div id="${this.getAttribute("id")}editor"></div>
-                        </main>
-                        </div>
-                    </div>
-                </div>    
-            </div>`
+                 
+            `;
+            this.main.insertAdjacentHTML('afterend', 
+            ` <div class="modal micromodal-slide" id="${this.getAttribute("id")}item" aria-hidden="true">
+            <div class="modal__overlay" tabindex="-1">
+                <div class="modal__container bg-c4 br-12 mx-24" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
+                <header class="modal__header px-24 py-28">
+                    <h2 id="modal-1-title" class="title f-st1 c-white" placeholder="Add a title..." contenteditable="true">New Document</h2>
+                    <button class="modal__close c-white" aria-label="Close modal" data-micromodal-close/>
+                </header>
+                <main class="modal__content c-white" id="modal-1-content">
+                    <div id="${this.getAttribute("id")}editor"></div>
+                </main>
+                </div>
+            </div>
+        </div>  `);
         // <p id="titletask" class="title f-st1 c-c3 mb-16" placeholder="Add a title..." contenteditable="true"></p>
        /*  let container = this.querySelector('[taskItems]')
         container.innerHTML = ""
         for (let i = 0; i < this.todos.length; i++) {
-            container.insertAdjacentHTML('beforeend',this.taskItem(i));
         }
         console.log(this.todos)
         

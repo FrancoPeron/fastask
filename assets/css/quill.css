@@ -408,7 +408,7 @@
     background: none;
     border: none;
     cursor: pointer;
-    display: inline-block;
+    display: block;
     float: left;
     height: 24px;
     padding: 3px 5px;
@@ -645,13 +645,13 @@
   }
   .ql-snow .ql-picker {
     color: rgb(255, 255, 255);
-    display: inline-block;
+    display: block;
     float: left;
     font-size: 14px;
     font-weight: 500;
     height: 24px;
     position: relative;
-    vertical-align: middle;
+    /* vertical-align: middle; */
   }
   .ql-snow .ql-picker-label {
     cursor: pointer;

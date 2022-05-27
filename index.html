@@ -18,39 +18,43 @@
   </head>
   <body class="bg-g3">
     
-    <main id="main" class="main flex flex-column align-items-center justify-center h-screen">
+    <main id="main" class="main flex flex-column h-screen">
 
-      <header class="header"></header>
+      <nav class="flex-row-wrap justify-between align-items-center fixed top-0 left-0 bg-c4 shadow w-100 z-100">
+        <header class="header"></header>
+        <div class="flex-row-nowrap align-items-center w-min">
+          <div class="palette__color"></div>
+          <div class="palette__color"></div>
+          <div class="palette__color"></div>
+          <div class="palette__color"></div>
+          <div class="palette__color"></div>
+  
+        </div>
+      </nav>
 
-      <nav class="nav bg-c4 shadow ">
-        <ul class="nav__item">
+      <nav class="nav bg-c4 shadow flex-column-wrap justify-start br-8">
+
+
+        <ul class="flex-column-wrap align-items-center px-16 py-20 flex-fill space-y-20">
           <li btnTodo><img class="nav__btn" src="./assets/img/todoBtn.svg" alt=""></li>
-          <!-- <li btnText><img  class="nav__btn" src="./assets/img/textBtn.svg" alt=""></li> -->
+          <li btnText><img  class="nav__btn" src="./assets/img/textBtn.svg" alt=""></li>
           <li btnDoc><img  class="nav__btn" src="./assets/img/documentBtn.svg" alt=""></li>
         </ul>
+
+        <ul class="flex-column-wrap align-items-center px-16 py-20">
+          <li btnTrash><img class="nav__btn" src="./assets/img/btnTrash.svg" alt=""></li>
+        </ul>
+
+        
+
       </nav>
 
       <div board class="board position-absolute"></div>
 
+      
+
     </main>
     
-    <div class="modal micromodal-slide" id="modal-1" aria-hidden="true">
-      <div class="modal__overlay" tabindex="-1">
-        <div class="modal__container bg-c4 br-12 mx-24" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
-          <header class="modal__header px-24 py-28">
-            <h2 id="modal-1-title" class="title f-st1 c-white" placeholder="Add a title..." contenteditable="true">New Document</h2>
-            <button class="modal__close c-white" aria-label="Close modal" data-micromodal-close/>
-          </header>
-          <main class="modal__content c-white" id="modal-1-content">
-            <div id="editor"></div>
-          </main>
-        </div>
-      </div>
-    </div>
-
-    
-
-
     <script type="module" src="./main.js"></script>
     <script type="module" src="./js/todo.js"></script>
     <script type="module" src="./js/document.js"></script>
@@ -62,23 +66,3 @@
     
   </body>
 </html>
-
-
-      <!--   <div id="todolist" class="todolist p-24 br-12 shadow bg-c4">
-          
-          <h2 id="titletask" class="title f-st1 c-c3 mb-16" placeholder="Add a title..." contenteditable="true"></h2>
-  
-          <ul items-list class="flex flex-column my-12">          
-            
-          </ul> -->
-  
-          <!-- <div class="flex flex-row justify-end">
-            <button class="btn-text b-trans f-b2 fw-6 c-c1 ml-8" @click="removeAllTodos">Remove All</button>
-            <button class="btn-text b-trans f-b2 fw-6 c-c1 ml-8" @click="markAllDone">Mark All</button>
-        
-          </div> -->
-          <!-- <a href="./views/otro.html">666</a> -->
-          <!-- <todo-component></todo-component> -->
-  
-  
-        <!-- </div> -->
