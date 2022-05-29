@@ -32,6 +32,19 @@ btnDoc.addEventListener('mousedown', e =>{
 
 
 
+fetch(`https://api.unsplash.com/search/photos/?query=house&client_id=btXOFRZKl5DqSAUkiX3C7gDBD7odWcz5_t4dU2ChBMI`)
+    .then((blob) => blob.json())
+    .then((data) => {
+        console.table(data);
+    })
+    .catch((err)=>{
+        console.log(err)
+    });
+
+
+
+
+
 
 
 /* fetch('http://colormind.io/api/', {
@@ -102,7 +115,7 @@ http.open("GET", url, true);
 http.send(); */
 
 
-fetch(`http://palett.es/API/v1/palette/monochrome/over/0.${Math.floor(Math.random() * 8)+1}`,{ mode: 'no-cors'})
+/* fetch(`https://cors-anywhere.herokuapp.com/http://palett.es/API/v1/palette/monochrome/over/0.${Math.floor(Math.random() * 8)+1}`,{ mode: 'no-cors'})
     .then((blob) => blob.json())
     .then((data) => {
         console.table(data);
@@ -110,7 +123,7 @@ fetch(`http://palett.es/API/v1/palette/monochrome/over/0.${Math.floor(Math.rando
     .catch((err)=>{
         console.log(err)
     });
-
+ */
 /* 
 const getUser = async ()=> {
     try {
