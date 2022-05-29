@@ -74,7 +74,7 @@ http.send(JSON.stringify(data));
  */
 
 
-var url = `http://palett.es/API/v1/palette/monochrome/over/0.${Math.floor(Math.random() * 8)+1}`;
+/* var url = `http://palett.es/API/v1/palette/monochrome/over/0.${Math.floor(Math.random() * 8)+1}`;
 // var url = `http://palett.es/API/v1/palette/from/1b1a21`;
 var http = new XMLHttpRequest();
 
@@ -98,7 +98,28 @@ http.onreadystatechange = function() {
 	}
 }
 
-http.open("GET", url);
-http.send();
+http.open("GET", url, true);
+http.send(); */
 
 
+fetch(`http://palett.es/API/v1/palette/monochrome/over/0.${Math.floor(Math.random() * 8)+1}`,{ mode: 'no-cors'})
+    .then((blob) => blob.json())
+    .then((data) => {
+        console.table(data);
+    })
+    .catch((err)=>{
+        console.log(err)
+    });
+
+/* 
+const getUser = async ()=> {
+    try {
+        const response = await fetch('http://palett.es/API/v1/palette/monochrome/over/0.1', { mode: 'no-cors'});
+        const result = await response.json();
+        console.log(response)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+getUser(); */
