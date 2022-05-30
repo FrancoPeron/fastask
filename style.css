@@ -1,7 +1,7 @@
 
 :root{
 
-  --cBrand1: #41FFAD;
+  --cBrand1: #5741ff;
   --cBrand2: #22B173;
   --cBrand3: #E8FFE6;
   --cBrand4: #1B1A21;
@@ -196,4 +196,31 @@ input[type='checkbox']:checked:after {
 
 .unplash__img{
   width: 100%;
+}
+
+
+
+.input, .textarea{
+  width: 100%;
+  position: relative;
+  padding: 12px 2px;
+  color: var(--cBlanco);
+  background-color: transparent;
+}
+
+.input::placeholder, .textarea::placeholder{
+  color: var(--cBlanco);
+  font-size: 1rem;
+}
+
+
+.buscador-header{
+  height: 40px;
+}
+
+.buscador-icon{
+  fill:none;
+  stroke:var(--cBrand1);
+  stroke-width:3px;
+  stroke-linecap:round;
 }

@@ -47,12 +47,19 @@
         </ul>
 
         <div boxImg class="box-img hidden flex-column bg-c4 shadow br-8 p-16">
-          <input type="search" name="" id="imgSearch">
-          <div id="unplashImgs" class="unplash_imgs"></div>
+          <div class="flex-row-nowrap">
+            <input class="input" placeholder="Search" type="search" name="" id="imgSearch">
+            
+            <svg class="buscador-header" xmlns="http://www.w3.org/2000/svg" width="25.95" height="27.016" viewBox="0 0 25.95 27.016">
+              <g transform="translate(1.25 1.25)">
+                <circle class="buscador-icon" cx="9.6" cy="9.6" r="9.6" transform="translate(0)"/>
+                <line class="buscador-icon" x2="6.449" y2="6.982" transform="translate(16.484 17.018)"/>
+              </g>
+            </svg>
+          </div>
           
+          <div id="unplashImgs" class="unplash_imgs"></div>
         </div>
-
-        
 
       </nav>
 
@@ -65,6 +72,7 @@
     <script type="module" src="./main.js"></script>
     <script type="module" src="./js/todo.js"></script>
     <script type="module" src="./js/document.js"></script>
+    <script type="module" src="./js/image.js"></script>
 
     <script type="module" src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
     <script type="module" src="./js/micromodal.js"></script>
