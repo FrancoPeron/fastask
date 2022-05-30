@@ -99,7 +99,7 @@ class Document extends HTMLElement {
         this.innerHTML =`
 
            
-                <img btnModal class="doc__img" src="./assets/img/documentBtn.svg" alt="">
+                <img btnModal class="doc__img" src="./assets/img/btnDocument.svg" alt="">
                  
             `;
             this.main.insertAdjacentHTML('afterend', 

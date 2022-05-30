@@ -171,3 +171,29 @@ input[type='checkbox']:checked:after {
   width: 56px;
   height: 56px;
 }
+
+
+
+
+
+
+
+.box-img{
+  position: absolute;
+  top: 0;
+  left: 100px;
+  width: 500px;
+  height: calc(100vh - 112px);
+}
+
+.unplash_imgs{
+  overflow-y: scroll;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+
+}
+
+.unplash__img{
+  width: 100%;
+}

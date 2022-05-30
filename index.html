@@ -32,18 +32,25 @@
         </div>
       </nav>
 
-      <nav class="nav bg-c4 shadow flex-column-wrap justify-start br-8">
+      <nav class="nav flex-column-nowrap justify-start bg-c4 shadow br-8">
 
 
         <ul class="flex-column-wrap align-items-center px-16 py-20 flex-fill space-y-20">
-          <li btnTodo><img class="nav__btn" src="./assets/img/todoBtn.svg" alt=""></li>
-          <li btnText><img  class="nav__btn" src="./assets/img/textBtn.svg" alt=""></li>
-          <li btnDoc><img  class="nav__btn" src="./assets/img/documentBtn.svg" alt=""></li>
+          <li btnTodo><img class="nav__btn" src="./assets/img/btnTodo.svg" alt=""></li>
+          <li btnText><img  class="nav__btn" src="./assets/img/btnText.svg" alt=""></li>
+          <li btnImg><img  class="nav__btn" src="./assets/img/btnImg.svg" alt=""></li>
+          <li btnDoc><img  class="nav__btn" src="./assets/img/btnDocument.svg" alt=""></li>
         </ul>
 
         <ul class="flex-column-wrap align-items-center px-16 py-20">
           <li btnTrash><img class="nav__btn" src="./assets/img/btnTrash.svg" alt=""></li>
         </ul>
+
+        <div boxImg class="box-img hidden flex-column bg-c4 shadow br-8 p-16">
+          <input type="search" name="" id="imgSearch">
+          <div id="unplashImgs" class="unplash_imgs"></div>
+          
+        </div>
 
         
 
