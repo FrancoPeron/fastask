@@ -30,7 +30,7 @@ btnDoc.addEventListener('mousedown', e =>{
 });
 
 
-
+/* imgae */
 
 
 
