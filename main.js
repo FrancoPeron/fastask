@@ -1,37 +1,50 @@
 
+// import { getLinkPreview } from "./node_modules/link-preview-js/build/index.js";
+// // import * as getLinkPreview from 'link-preview-j';
+// // pass the link directly
+// getLinkPreview("https://www.youtube.com/watch?v=MejbOFk7H6c").then((data) =>
+//   console.debug(data)
+// );
 
 let containerMain = document.querySelector("[board]");
 
-
-/* todo */
-let todoHtmlItem = (val)=>{ return `<todo-item todoItem id="todo${val}" class="todoItem p-24 br-8 shadow-sm bg-c4"></todo-item>`}
-let todoId = localStorage.getItem('cantTodos') || 0;
-let btnTodo = (document.querySelector("[btnTodo]"))
-let todosItemArray = document.querySelectorAll("[todoItem]")
-
-for (let index = 0; index < todoId ; index++) {
-    containerMain.insertAdjacentHTML('beforeend',todoHtmlItem(index));
-}
-btnTodo.addEventListener('mousedown', e =>{
-    todosItemArray = document.querySelectorAll("[todoItem]")
-    containerMain.insertAdjacentHTML('beforeend',todoHtmlItem(todosItemArray.length));
-    localStorage.setItem('cantTodos', todosItemArray.length+1);    
-});
 
 
 /* document */
 
 let docId = JSON.parse(localStorage.getItem('cantTodos')) || 0;
 let btnDoc = (document.querySelector("[btnDoc]"))
-btnDoc.addEventListener('mousedown', e =>{
-    containerMain.insertAdjacentHTML('beforeend',`<document-item docItem id="doc${docId++}" class="documentItem"></document-item>`);
-    // localStorage.setItem('cantTodos', JSON.stringify(todoId));
+btnDoc.addEventListener('click', e =>{
     
+    containerMain.insertAdjacentHTML('beforeend',`<document-item docItem id="doc${docId++}" class="documentItem z-20"></document-item>`);
+
 });
 
 
+/* imgae */
 
 
+window.onresize = resize;
+
+function resize()
+{
+    console.log(window.outerHeight)
+}
+
+const resize_ob = new ResizeObserver(function(entries) {
+	// since we are observing only a single element, so we access the first element in entries array
+	let rect = entries[0].contentRect;
+
+	// current width & height
+	let width = rect.width;
+	let height = rect.height;
+
+	console.log('Current Width : ' + width);
+	console.log('Current Height : ' + height);
+});
+
+// start observing for resize
+resize_ob.observe(document.documentElement);
 
 
 /* fetch('http://colormind.io/api/', {

@@ -18,54 +18,44 @@
   </head>
   <body class="bg-g3">
     
-    <main id="main" class="main flex flex-column h-screen">
+    <main id="main" class="main">
 
-      <nav class="flex-row-wrap justify-between align-items-center fixed top-0 left-0 bg-c4 shadow w-100 z-100">
-        <header class="header"></header>
-        <div class="flex-row-nowrap align-items-center w-min">
-          <div class="palette__color"></div>
-          <div class="palette__color"></div>
-          <div class="palette__color"></div>
-          <div class="palette__color"></div>
-          <div class="palette__color"></div>
-  
-        </div>
+      <nav class="nav flex-row-wrap justify-between align-items-center sticky left-0 bg-c4 shadow w-100 z-100">
+        <header class="header flex-row-nowrap justify-center align-items-center"><img class="h-100" src="./assets/img/logo.png" alt=""></header>
       </nav>
 
-      <nav class="nav flex-column-nowrap justify-start bg-c4 shadow br-8">
+      <div board class="board z-0">
+        <nav toolbar class="toolbar sticky flex-column-nowrap justify-start bg-c4 z-10">
+    
+          <ul class="flex-column-wrap align-items-center px-16 py-20 flex-fill space-y-20">
+            <li btnText><img class="nav__btn" src="./assets/img/btnText.svg" alt=""></li>
+            <li btnTodo><img class="nav__btn" src="./assets/img/btnTodo.svg" alt=""></li>
+            <li btnImg><img class="nav__btn" src="./assets/img/btnImg.svg" alt=""></li>
+            <li btnDoc><img class="nav__btn" src="./assets/img/btnDocument.svg" alt=""></li>
+          </ul>
+  
+          <ul class="flex-column-wrap align-items-center px-16 py-20">
+            <li btnTrash><img class="nav__btn" src="./assets/img/btnTrash.svg" alt=""></li>
+          </ul>
+          
+        </nav>
 
-
-        <ul class="flex-column-wrap align-items-center px-16 py-20 flex-fill space-y-20">
-          <li btnTodo><img class="nav__btn" src="./assets/img/btnTodo.svg" alt=""></li>
-          <li btnText><img  class="nav__btn" src="./assets/img/btnText.svg" alt=""></li>
-          <li btnImg><img  class="nav__btn" src="./assets/img/btnImg.svg" alt=""></li>
-          <li btnDoc><img  class="nav__btn" src="./assets/img/btnDocument.svg" alt=""></li>
-        </ul>
-
-        <ul class="flex-column-wrap align-items-center px-16 py-20">
-          <li btnTrash><img class="nav__btn" src="./assets/img/btnTrash.svg" alt=""></li>
-        </ul>
-
-        <div boxImg class="box-img hidden flex-column bg-c4 shadow br-8 p-16">
+        <div boxImg class="box-img hidden flex-column bg-c4 shadow br-4 p-16">
           <div class="flex-row-nowrap">
-            <input class="input" placeholder="Search" type="search" name="" id="imgSearch">
+            <input inputSearch class="input" placeholder="Search" type="search" name="">
             
             <svg class="buscador-header" xmlns="http://www.w3.org/2000/svg" width="25.95" height="27.016" viewBox="0 0 25.95 27.016">
-              <g transform="translate(1.25 1.25)">
+            <g transform="translate(1.25 1.25)">
                 <circle class="buscador-icon" cx="9.6" cy="9.6" r="9.6" transform="translate(0)"/>
                 <line class="buscador-icon" x2="6.449" y2="6.982" transform="translate(16.484 17.018)"/>
-              </g>
+            </g>
             </svg>
           </div>
           
           <div id="unplashImgs" class="unplash_imgs"></div>
         </div>
 
-      </nav>
-
-      <div board class="board position-absolute"></div>
-
-      
+      </div>
 
     </main>
     

@@ -1,3 +1,161 @@
+
+/* ========== Variables ========== */
+
+let containerMain = document.querySelector("[board]");
+let btnTrash = document.querySelector("[btnTrash]")
+let newItem = false
+/* todo */
+let todoHtmlItem = (val)=>{ return `<todo-item todoItem id="todo${val}" class="todoItem p-24 br-4 shadow-sm bg-c4 z-20"></todo-item>`}
+let todoPositions = {
+    clientX: undefined,
+    clientY: undefined,
+    movementX: 0,
+    movementY: 0
+}
+
+
+/* ========== Imprimo los datos del localStorage ========== */
+
+let todoId = localStorage.getItem('cantTodos') || 0;
+for (let index = 0; index < todoId ; index++) {
+    containerMain.insertAdjacentHTML('beforeend',todoHtmlItem(index));
+}
+
+/* ========== Functions ========== */
+
+let drag = (event,item)=>{
+    console.log(event, item)
+    
+    setTimeout(() => {
+        event.preventDefault();
+        todoPositions.clientY = event.clientY
+        todoPositions.clientX = event.clientX
+
+        document.onmousemove = (event)=> {
+
+            event.preventDefault()
+            todoPositions.movementY = todoPositions.clientY - event.clientY
+            todoPositions.movementX = todoPositions.clientX - event.clientX
+            todoPositions.clientX = event.clientX
+            todoPositions.clientY = event.clientY
+            // set the element's new position:
+            item.style.top = ( item.offsetTop - todoPositions.movementY) + "px"
+            item.style.left = ( item.offsetLeft - todoPositions.movementX) + "px"
+
+            let pos = {
+                posY: item.style.top,
+                posX: item.style.left
+            }
+            
+            localStorage.setItem(`${item.getAttribute("id")}Pos`, JSON.stringify(pos));
+
+            trashOpacity(event, item)
+            //event.target.trashOpacity(event)
+            
+        }
+        document.onmouseup = (event)=> {
+            document.onmouseup = null
+            document.onmousemove = null
+            
+            trash(event,item)
+            itemOnBoard(event,item, newItem)
+        
+        }
+
+    }, 10);
+}
+
+let listenItems = ()=> {
+    for (let index = 0; index < document.querySelectorAll("[todoItem]").length; index++) {
+        let item = document.querySelectorAll("[todoItem]")[index]
+        item.addEventListener("mousedown", (event) =>{
+            newItem = false
+            drag(event, item, newItem)
+        });
+    }
+}
+
+let borrarItem = (item)=>{
+    let todosItemArray = document.querySelectorAll("[todoItem]")
+    let thisId = Number(item.getAttribute("id").replace( /^\D+/g, ''))
+    item.remove()
+    console.log(thisId)
+    
+    localStorage.setItem('cantTodos', localStorage.getItem('cantTodos')-1);    
+    for (let index = thisId; index < localStorage.getItem('cantTodos'); index++) {
+        localStorage.setItem(`todo${index}`, localStorage.getItem(`todo${index+1}`));
+        localStorage.setItem(`todo${index}Pos`, localStorage.getItem(`todo${index+1}Pos`));
+        todosItemArray[index+1].id = `todo${index}`
+    }
+    localStorage.removeItem(`todo${localStorage.getItem('cantTodos')}`)
+    localStorage.removeItem(`todo${localStorage.getItem('cantTodos')}Pos`)
+}
+
+let itemOnBoard = (event, item, newItem) =>{
+    
+    let board = containerMain.getBoundingClientRect().top - 60 < ( item.offsetTop - todoPositions.movementY) && event.clientY < containerMain.getBoundingClientRect().bottom && 
+                containerMain.getBoundingClientRect().left + 130 < ( item.offsetLeft - todoPositions.movementX) && event.clientX < containerMain.getBoundingClientRect().right 
+
+    if (!board && newItem) {
+        borrarItem(item)
+    }
+}
+
+let trash = (event, item)=>{
+
+    let delate = btnTrash.getBoundingClientRect().top < event.clientY && event.clientY < btnTrash.getBoundingClientRect().bottom && 
+                btnTrash.getBoundingClientRect().left < event.clientX && event.clientX < btnTrash.getBoundingClientRect().right
+    
+    if (delate) {
+        borrarItem(item)
+
+    }
+}
+
+let trashOpacity = (event, item)=>{
+    
+    let delate = btnTrash.getBoundingClientRect().top < event.clientY && event.clientY < btnTrash.getBoundingClientRect().bottom && 
+    btnTrash.getBoundingClientRect().left < event.clientX && event.clientX < btnTrash.getBoundingClientRect().right;
+    (delate) ? item.style.opacity = ".8" : item.style.opacity = "1";
+}
+
+/* ========== Agrega un nuevo Todo ========== */
+
+let btnTodo = document.querySelector("[btnTodo]")
+btnTodo.addEventListener('mousedown', (event) =>{
+    event.preventDefault();
+    newItem = true
+    containerMain.insertAdjacentHTML('beforeend',todoHtmlItem(document.querySelectorAll("[todoItem]").length));
+    localStorage.setItem('cantTodos', document.querySelectorAll("[todoItem]").length);
+    const last = Array.from(document.querySelectorAll("[todoItem]")).pop();
+    drag(event, last, newItem)
+    listenItems()
+});
+
+listenItems()
+
+
+
+/* new MutationObserver((mutationsList) => {
+    // console.log(mutationsList.length)
+    
+    mutationsList.forEach(function(mutation) {
+        console.log (mutation.target)
+        
+        
+    }); 
+
+}).observe(containerMain,{  
+    attributes: true,
+    characterData: true,
+    childList: true,
+    subtree: true,
+    attributeOldValue: true,
+    characterDataOldValue: true 
+})
+ */
+
+
 /*----------------------------------*/
 
 class ToDoList extends HTMLElement {
@@ -8,35 +166,25 @@ class ToDoList extends HTMLElement {
             done: false,
             content: "",
         }]
+    
+        this.containerMain = document.querySelector("[board]");
 
-        this.firstPos = JSON.parse(localStorage.getItem(`${this.getAttribute("id")}Pos`)) || {
-            posY: "130px",
-            posX: "160px"
-        }
-
-        this.positions = {
-            clientX: undefined,
-            clientY: undefined,
-            movementX: 0,
-            movementY: 0
-        }
-        
-        this.trash = document.querySelector("[btnTrash]")
         
     }
 
     connectedCallback() {
         console.log(`${this.getAttribute("id")} ADDED TO THE DOM`);
-        //console.log(this);
+        /* ============================================================*/
 
+        this.firstPos = JSON.parse(localStorage.getItem(`${this.getAttribute("id")}Pos`)) || {
+            posY: "46px",
+            posX: "16px"
+        }
         this.style.top = this.firstPos.posY
         this.style.left = this.firstPos.posX
         
         this.printTodos();
-        this.drag()
-        //this.setCursor(1,"start")
-        
-        //console.log(this.dragItems)
+       
     }
 
     disconnectedCallback() {
@@ -69,7 +217,7 @@ class ToDoList extends HTMLElement {
                 <button class="btn-text b-trans f-b2 fw-6 c-c1 ml-8" @click="removeAllTodos">Remove All</button>
                 <button class="btn-text b-trans f-b2 fw-6 c-c1 ml-8" @click="markAllDone">Mark All</button>
             
-              </div> -->
+                </div> -->
                 
             </li>
             `
@@ -88,78 +236,6 @@ class ToDoList extends HTMLElement {
         
         this.obsChanges()
     
-    }
-
-    /*====================================================================================================================================*/
-
-    drag(){
-
-        this.addEventListener('mousedown', function(event){
-            setTimeout(() => {
-                event.preventDefault();
-
-                this.positions.clientY = event.clientY
-                this.positions.clientX = event.clientX
-
-                document.onmousemove = (event)=> {
-
-                    event.preventDefault()
-                    this.positions.movementY = this.positions.clientY - event.clientY
-                    this.positions.movementX = this.positions.clientX - event.clientX
-                    this.positions.clientX = event.clientX
-                    this.positions.clientY = event.clientY
-                    // set the element's new position:
-                    this.style.top = ( this.offsetTop - this.positions.movementY) + "px"
-                    this.style.left = ( this.offsetLeft - this.positions.movementX) + "px"
-
-                    let pos = {
-                        posY: this.style.top,
-                        posX: this.style.left
-                    }
-                    
-                    localStorage.setItem(`${this.getAttribute("id")}Pos`, JSON.stringify(pos));
-
-                    let delate = this.trash.getBoundingClientRect().top < event.clientY && event.clientY < this.trash.getBoundingClientRect().bottom && 
-                    this.trash.getBoundingClientRect().left < event.clientX && event.clientX < this.trash.getBoundingClientRect().right
-
-                    if (delate) {
-                        this.style.opacity = ".8"
-                    }
-                    else{
-                        
-                        this.style.opacity = "1"
-                    }
-                    
-                }
-                document.onmouseup = (event)=> {
-                    document.onmouseup = null
-                    document.onmousemove = null
-
-                    let delate = this.trash.getBoundingClientRect().top < event.clientY && event.clientY < this.trash.getBoundingClientRect().bottom && 
-                    this.trash.getBoundingClientRect().left < event.clientX && event.clientX < this.trash.getBoundingClientRect().right
-                    if (delate) {
-                        //this.style.opacity = ".8"
-                        let todosItemArray = document.querySelectorAll("[todoItem]")
-                        let thisId = Number(this.getAttribute("id").replace( /^\D+/g, ''))
-                        console.log(thisId)
-                        this.remove()
-                        
-                        localStorage.setItem('cantTodos', localStorage.getItem('cantTodos')-1);    
-                        for (let index = thisId; index < localStorage.getItem('cantTodos'); index++) {
-                            localStorage.setItem(`todo${index}`, localStorage.getItem(`todo${index+1}`));
-                            localStorage.setItem(`todo${index}Pos`, localStorage.getItem(`todo${index+1}Pos`));
-                            todosItemArray[index+1].id = `todo${index}`
-                        }
-                        localStorage.removeItem(`todo${localStorage.getItem('cantTodos')}`)
-                        localStorage.removeItem(`todo${localStorage.getItem('cantTodos')}Pos`)
-
-                    }
-
-                    
-                }
-
-            }, 10);
-        })
     }
 
     /*====================================================================================================================================*/
@@ -348,3 +424,105 @@ class ToDoList extends HTMLElement {
 
 }
 window.customElements.define('todo-item', ToDoList);
+
+
+
+
+    // /*====================================================================================================================================*/
+
+    // drag(){
+
+    //     this.addEventListener('mousedown', function(event){
+    //         setTimeout(() => {
+    //             event.preventDefault();
+
+    //             this.positions.clientY = event.clientY
+    //             this.positions.clientX = event.clientX
+
+    //             document.onmousemove = (event)=> {
+
+    //                 event.preventDefault()
+    //                 this.positions.movementY = this.positions.clientY - event.clientY
+    //                 this.positions.movementX = this.positions.clientX - event.clientX
+    //                 this.positions.clientX = event.clientX
+    //                 this.positions.clientY = event.clientY
+    //                 // set the element's new position:
+    //                 this.style.top = ( this.offsetTop - this.positions.movementY) + "px"
+    //                 this.style.left = ( this.offsetLeft - this.positions.movementX) + "px"
+
+    //                 let pos = {
+    //                     posY: this.style.top,
+    //                     posX: this.style.left
+    //                 }
+                    
+    //                 localStorage.setItem(`${this.getAttribute("id")}Pos`, JSON.stringify(pos));
+
+    //                 this.trashOpacity(event)
+                    
+    //             }
+    //             document.onmouseup = (event)=> {
+    //                 document.onmouseup = null
+    //                 document.onmousemove = null
+
+    //                 this.trash(event)
+
+    //                 let board = this.containerMain.getBoundingClientRect().top - 60 < ( this.offsetTop - this.positions.movementY) && event.clientY < this.containerMain.getBoundingClientRect().bottom && 
+    //                 this.containerMain.getBoundingClientRect().left + 130 < ( this.offsetLeft - this.positions.movementX) && event.clientX < this.containerMain.getBoundingClientRect().right 
+    //                 let onetime = true
+
+    //                 console.log(board,( this.offsetTop - this.positions.movementY), this.btnTodo.getBoundingClientRect().left)
+    //                 if (board && onetime) {
+    //                     onetime = false
+    //                     this.containerMain.insertAdjacentElement('beforeend',this);
+    //                 }
+    //                 else{
+    //                     this.style.opacity = ".8"
+    //                     this.style.top = "-25px"
+    //                     this.style.left = "0px"
+
+
+    //                     let pos = {
+    //                         posY: this.style.top,
+    //                         posX: this.style.left
+    //                     }
+                        
+    //                     localStorage.setItem(`${this.getAttribute("id")}Pos`, JSON.stringify(pos));
+
+
+    //                 }
+    //             }
+
+    //         }, 10);
+    //     })
+    // }
+
+    // /*====================================================================================================================================*/
+
+    // trash(event){
+    //     let delate = this.btnTrash.getBoundingClientRect().top < event.clientY && event.clientY < this.btnTrash.getBoundingClientRect().bottom && 
+    //     this.btnTrash.getBoundingClientRect().left < event.clientX && event.clientX < this.btnTrash.getBoundingClientRect().right
+    //     if (delate) {
+    //         //this.style.opacity = ".8"
+    //         let todosItemArray = document.querySelectorAll("[todoItem]")
+    //         let thisId = Number(this.getAttribute("id").replace( /^\D+/g, ''))
+    //         console.log(thisId)
+    //         this.remove()
+            
+    //         localStorage.setItem('cantTodos', localStorage.getItem('cantTodos')-1);    
+    //         for (let index = thisId; index < localStorage.getItem('cantTodos'); index++) {
+    //             localStorage.setItem(`todo${index}`, localStorage.getItem(`todo${index+1}`));
+    //             localStorage.setItem(`todo${index}Pos`, localStorage.getItem(`todo${index+1}Pos`));
+    //             todosItemArray[index+1].id = `todo${index}`
+    //         }
+    //         localStorage.removeItem(`todo${localStorage.getItem('cantTodos')}`)
+    //         localStorage.removeItem(`todo${localStorage.getItem('cantTodos')}Pos`)
+
+    //     }
+    // }
+
+    // trashOpacity = (event)=>{
+        
+    //     let delate = this.btnTrash.getBoundingClientRect().top < event.clientY && event.clientY < this.btnTrash.getBoundingClientRect().bottom && 
+    //     this.btnTrash.getBoundingClientRect().left < event.clientX && event.clientX < this.btnTrash.getBoundingClientRect().right;
+    //     (delate) ? this.style.opacity = ".8" : this.style.opacity = "1";
+    // }

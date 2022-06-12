@@ -12,6 +12,7 @@
     "vite": "^2.9.2"
   },
   "dependencies": {
+    "link-preview-js": "^2.1.15",
     "skan-css": "^1.0.10"
   }
 }
