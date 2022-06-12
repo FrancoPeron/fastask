@@ -204,7 +204,7 @@ class Document extends HTMLElement {
     /*====================================================================================================================================*/
 
 
-    printTodos(){
+    printDocs(){
         this.innerHTML =`<img btnModal class="doc__img" src="./assets/img/btnDocument.svg" alt="">`;
         this.main.insertAdjacentHTML('afterend', 
         `<div class="modal micromodal-slide" id="${this.getAttribute("id")}item" aria-hidden="true">
