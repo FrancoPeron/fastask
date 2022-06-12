@@ -50,6 +50,7 @@ const getUser = async ()=> {
             });
         }
 
+      
     } catch (err) {
         console.log(err)
     }
