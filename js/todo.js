@@ -4,6 +4,7 @@
 let containerMain = document.querySelector("[board]");
 let btnTrash = document.querySelector("[btnTrash]")
 let newItem = false
+
 /* todo */
 let todoHtmlItem = (val)=>{ return `<todo-item todoItem id="todo${val}" class="todoItem p-24 br-4 shadow-sm bg-c4 z-20"></todo-item>`}
 let todoPositions = {
@@ -13,25 +14,28 @@ let todoPositions = {
     movementY: 0
 }
 
+let startposX
+let startposY
+let maxmove = 5
 
-/* ========== Imprimo los datos del localStorage ========== */
 
-let todoId = localStorage.getItem('cantTodos') || 0;
-for (let index = 0; index < todoId ; index++) {
-    containerMain.insertAdjacentHTML('beforeend',todoHtmlItem(index));
-}
+
 
 /* ========== Functions ========== */
 
 let drag = (event,item)=>{
-    console.log(event, item)
-    
-    setTimeout(() => {
-        event.preventDefault();
-        todoPositions.clientY = event.clientY
-        todoPositions.clientX = event.clientX
+    //console.log(event, item)
 
-        document.onmousemove = (event)=> {
+    startposX = event.clientX
+    startposY = event.clientY
+
+    event.preventDefault();
+    todoPositions.clientY = event.clientY
+    todoPositions.clientX = event.clientX
+
+    document.onmousemove = (event)=> {
+
+        if(Math.abs(event.clientX - startposX) > maxmove || Math.abs(event.clientY - startposY) > maxmove){
 
             event.preventDefault()
             todoPositions.movementY = todoPositions.clientY - event.clientY
@@ -50,28 +54,57 @@ let drag = (event,item)=>{
             localStorage.setItem(`${item.getAttribute("id")}Pos`, JSON.stringify(pos));
 
             trashOpacity(event, item)
-            //event.target.trashOpacity(event)
-            
         }
-        document.onmouseup = (event)=> {
-            document.onmouseup = null
-            document.onmousemove = null
-            
-            trash(event,item)
-            itemOnBoard(event,item, newItem)
         
-        }
+    }
+    document.onmouseup = (event)=> {
+        document.onmouseup = null
+        document.onmousemove = null
+        
+        trash(event, item)
+        itemOnBoard(event, item)
+    
+    }
 
-    }, 10);
+   
 }
 
 let listenItems = ()=> {
+
     for (let index = 0; index < document.querySelectorAll("[todoItem]").length; index++) {
         let item = document.querySelectorAll("[todoItem]")[index]
-        item.addEventListener("mousedown", (event) =>{
+        item.classList.add("itemMoveBlock");
+        
+        const mousedown = (event) =>{
             newItem = false
-            drag(event, item, newItem)
-        });
+            drag(event, item)
+        }
+        const mouseup = (event)=>{
+            
+            if(Math.abs(event.clientX - startposX) < maxmove && Math.abs(event.clientY - startposY) < maxmove){
+                console.log("itemEditable")
+
+                item.classList.remove("itemMoveBlock");
+                item.classList.add("itemMoveEditable");
+                item.onmousedown = null
+
+                containerMain.addEventListener("mousedown",(e)=>{
+                    if (e.target == e.currentTarget) {
+                        
+                        item.classList.remove("itemMoveEditable");
+                        item.classList.add("itemMoveBlock");
+                        item.onmousedown = mousedown
+                        
+                    } 
+                });
+            }
+
+        }
+
+        item.onmousedown = mousedown
+        item.onmouseup = mouseup
+
+
     }
 }
 
@@ -79,7 +112,7 @@ let borrarItem = (item)=>{
     let todosItemArray = document.querySelectorAll("[todoItem]")
     let thisId = Number(item.getAttribute("id").replace( /^\D+/g, ''))
     item.remove()
-    console.log(thisId)
+    //console.log(thisId)
     
     localStorage.setItem('cantTodos', localStorage.getItem('cantTodos')-1);    
     for (let index = thisId; index < localStorage.getItem('cantTodos'); index++) {
@@ -91,7 +124,7 @@ let borrarItem = (item)=>{
     localStorage.removeItem(`todo${localStorage.getItem('cantTodos')}Pos`)
 }
 
-let itemOnBoard = (event, item, newItem) =>{
+let itemOnBoard = (event, item) =>{
     
     let board = containerMain.getBoundingClientRect().top - 60 < ( item.offsetTop - todoPositions.movementY) && event.clientY < containerMain.getBoundingClientRect().bottom && 
                 containerMain.getBoundingClientRect().left + 130 < ( item.offsetLeft - todoPositions.movementX) && event.clientX < containerMain.getBoundingClientRect().right 
@@ -105,18 +138,14 @@ let trash = (event, item)=>{
 
     let delate = btnTrash.getBoundingClientRect().top < event.clientY && event.clientY < btnTrash.getBoundingClientRect().bottom && 
                 btnTrash.getBoundingClientRect().left < event.clientX && event.clientX < btnTrash.getBoundingClientRect().right
-    
-    if (delate) {
-        borrarItem(item)
-
-    }
+    if (delate) borrarItem(item)
 }
 
 let trashOpacity = (event, item)=>{
     
     let delate = btnTrash.getBoundingClientRect().top < event.clientY && event.clientY < btnTrash.getBoundingClientRect().bottom && 
     btnTrash.getBoundingClientRect().left < event.clientX && event.clientX < btnTrash.getBoundingClientRect().right;
-    (delate) ? item.style.opacity = ".8" : item.style.opacity = "1";
+    (delate) ? item.classList.add("trashOpacity") : item.classList.remove("trashOpacity");
 }
 
 /* ========== Agrega un nuevo Todo ========== */
@@ -124,37 +153,23 @@ let trashOpacity = (event, item)=>{
 let btnTodo = document.querySelector("[btnTodo]")
 btnTodo.addEventListener('mousedown', (event) =>{
     event.preventDefault();
-    newItem = true
     containerMain.insertAdjacentHTML('beforeend',todoHtmlItem(document.querySelectorAll("[todoItem]").length));
     localStorage.setItem('cantTodos', document.querySelectorAll("[todoItem]").length);
+
     const last = Array.from(document.querySelectorAll("[todoItem]")).pop();
-    drag(event, last, newItem)
+    newItem = true
+    drag(event, last)
     listenItems()
 });
 
+/* ========== Imprimo los datos del localStorage ========== */
+
+let todoId = localStorage.getItem('cantTodos') || 0;
+for (let index = 0; index < todoId ; index++) {
+    containerMain.insertAdjacentHTML('beforeend',todoHtmlItem(index));
+}
+
 listenItems()
-
-
-
-/* new MutationObserver((mutationsList) => {
-    // console.log(mutationsList.length)
-    
-    mutationsList.forEach(function(mutation) {
-        console.log (mutation.target)
-        
-        
-    }); 
-
-}).observe(containerMain,{  
-    attributes: true,
-    characterData: true,
-    childList: true,
-    subtree: true,
-    attributeOldValue: true,
-    characterDataOldValue: true 
-})
- */
-
 
 /*----------------------------------*/
 
@@ -426,6 +441,24 @@ class ToDoList extends HTMLElement {
 window.customElements.define('todo-item', ToDoList);
 
 
+/* new MutationObserver((mutationsList) => {
+    // console.log(mutationsList.length)
+    
+    mutationsList.forEach(function(mutation) {
+        console.log (mutation.target)
+        
+        
+    }); 
+
+}).observe(containerMain,{  
+    attributes: true,
+    characterData: true,
+    childList: true,
+    subtree: true,
+    attributeOldValue: true,
+    characterDataOldValue: true 
+})
+ */
 
 
     // /*====================================================================================================================================*/

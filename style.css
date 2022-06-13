@@ -224,6 +224,12 @@ input[type='checkbox']:checked:after {
   width: 400px;
 }
 
+.trashOpacity{
+  opacity: .8;
+  transform: scale(.9);
+  transition: all .2s ease-out;
+}
+
 
 
 .imgItem{
@@ -237,4 +243,32 @@ input[type='checkbox']:checked:after {
   max-height: 700px;
   resize: both;
   overflow: hidden;
+}
+.imgItem img{
+  min-height: inherit;
+}
+
+
+
+
+.itemMoveEditable{
+  outline: solid 3px var(--cBrand1);
+}
+
+
+
+.itemMoveBlock ::after{
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+::-webkit-resizer {
+ 
+
+  background-image: url(./assets/img/resizer.svg);
+
 }

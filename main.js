@@ -10,15 +10,6 @@ let containerMain = document.querySelector("[board]");
 
 
 
-/* document */
-
-let docId = JSON.parse(localStorage.getItem('cantTodos')) || 0;
-let btnDoc = (document.querySelector("[btnDoc]"))
-btnDoc.addEventListener('click', e =>{
-    
-    containerMain.insertAdjacentHTML('beforeend',`<document-item docItem id="doc${docId++}" class="documentItem z-20"></document-item>`);
-
-});
 
 
 /* imgae */

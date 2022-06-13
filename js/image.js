@@ -44,7 +44,7 @@ const getUser = async ()=> {
         for (let index = 0; index < itemImg.length; index++) {
             itemImg[index].addEventListener('click', e =>{
                 // console.log(e.target.currentSrc)
-                containerMain.insertAdjacentHTML('beforeend',`<image-item srcimg="${e.target.currentSrc}" class="imgItem z-20"></image-item>`);
+                containerMain.insertAdjacentHTML('beforeend',`<image-item srcimg="${e.target.currentSrc}" class="flex imgItem shadow z-20"></image-item>`);
                 
                 boxImg.style.display = "none";
             });
