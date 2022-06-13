@@ -1,145 +1,33 @@
+import { dragEvent } from "./dragEvents.js";
+let tool = "doc";
+let HtmlItem = (val)=>{ return `<document-item docItem id="doc${val}" class="documentItem flex-column-nowrap align-items-center z-20"></document-item>`}
 
-/* ========== Variables ========== */
 
-let containerMain = document.querySelector("[board]");
-let btnTrash = document.querySelector("[btnTrash]")
-let newItem = false
-/* Doc */
-let docHtmlItem = (val)=>{ return `<document-item docItem id="doc${val}" class="documentItem z-20"></document-item>`}
-let docPositions = {
-    clientX: undefined,
-    clientY: undefined,
-    movementX: 0,
-    movementY: 0
-}
-
-/* ========== Imprimo los datos del localStorage ========== */
-
-let docId = localStorage.getItem('cantDoc') || 0;
-for (let index = 0; index < docId ; index++) {
-    containerMain.insertAdjacentHTML('beforeend',docHtmlItem(index));
-}
-
-/* ========== Functions ========== */
-
-let drag = (event,item)=>{
-    console.log(event, item)
-    
-    setTimeout(() => {
+function insertItem(drag,listenItems) {
+    let containerMain = document.querySelector("[board]");
+    document.querySelector(`[btn-${tool}]`).addEventListener('mousedown', (event) =>{
         event.preventDefault();
-        docPositions.clientY = event.clientY
-        docPositions.clientX = event.clientX
-
-        document.onmousemove = (event)=> {
-
-            event.preventDefault()
-            docPositions.movementY = docPositions.clientY - event.clientY
-            docPositions.movementX = docPositions.clientX - event.clientX
-            docPositions.clientX = event.clientX
-            docPositions.clientY = event.clientY
-            // set the element's new position:
-            item.style.top = ( item.offsetTop - docPositions.movementY) + "px"
-            item.style.left = ( item.offsetLeft - docPositions.movementX) + "px"
-
-            let pos = {
-                posY: item.style.top,
-                posX: item.style.left
-            }
-            
-            localStorage.setItem(`${item.getAttribute("id")}Pos`, JSON.stringify(pos));
-
-            trashOpacity(event, item)
-            //event.target.trashOpacity(event)
-            
-        }
-        document.onmouseup = (event)=> {
-            document.onmouseup = null
-            document.onmousemove = null
-            
-            trash(event,item)
-            itemOnBoard(event,item, newItem)
-        
-        }
-
-    }, 10);
-}
-
-let listenItems = ()=> {
-    for (let index = 0; index < document.querySelectorAll("[docItem]").length; index++) {
-        let item = document.querySelectorAll("[docItem]")[index]
-        item.addEventListener("mousedown", (event) =>{
-            newItem = false
-            drag(event, item, newItem)
-        });
-    }
-}
-
-let borrarItem = (item)=>{
-    let docsItemArray = document.querySelectorAll("[docItem]")
-    let thisId = Number(item.getAttribute("id").replace( /^\D+/g, ''))
-    item.remove()
-    console.log(thisId)
+        containerMain.insertAdjacentHTML('beforeend',HtmlItem(document.querySelectorAll(`[${tool}Item]`).length));
+        localStorage.setItem(`cant-${tool}s`, document.querySelectorAll(`[${tool}Item]`).length);
     
-    localStorage.setItem('cantDoc', localStorage.getItem('cantDoc')-1);    
-    for (let index = thisId; index < localStorage.getItem('cantDoc'); index++) {
-        localStorage.setItem(`doc${index}`, localStorage.getItem(`doc${index+1}`));
-        localStorage.setItem(`doc${index}Pos`, localStorage.getItem(`doc${index+1}Pos`));
-        docsItemArray[index+1].id = `doc${index}`
-    }
-    localStorage.removeItem(`doc${localStorage.getItem('cantDoc')}`)
-    localStorage.removeItem(`doc${localStorage.getItem('cantDoc')}Pos`)
+        const last = Array.from(document.querySelectorAll(`[${tool}Item]`)).pop();
+        drag(event, last, true)
+        listenItems()
+    });
+
 }
 
-let itemOnBoard = (event, item, newItem) =>{
-    
-    let board = containerMain.getBoundingClientRect().top - 60 < ( item.offsetTop - docPositions.movementY) && event.clientY < containerMain.getBoundingClientRect().bottom && 
-                containerMain.getBoundingClientRect().left + 130 < ( item.offsetLeft - docPositions.movementX) && event.clientX < containerMain.getBoundingClientRect().right 
-
-    if (!board && newItem) {
-        borrarItem(item)
-    }
-}
-
-let trash = (event, item)=>{
-
-    let delate = btnTrash.getBoundingClientRect().top < event.clientY && event.clientY < btnTrash.getBoundingClientRect().bottom && 
-                btnTrash.getBoundingClientRect().left < event.clientX && event.clientX < btnTrash.getBoundingClientRect().right
-    
-    if (delate) {
-        borrarItem(item)
-
-    }
-}
-
-let trashOpacity = (event, item)=>{
-    
-    let delate = btnTrash.getBoundingClientRect().top < event.clientY && event.clientY < btnTrash.getBoundingClientRect().bottom && 
-    btnTrash.getBoundingClientRect().left < event.clientX && event.clientX < btnTrash.getBoundingClientRect().right;
-    (delate) ? item.style.opacity = ".8" : item.style.opacity = "1";
-}
-
-/* ========== Agrega un nuevo Document ========== */
-
-let btnDoc = document.querySelector("[btnDoc]")
-btnDoc.addEventListener('mousedown', (event) =>{
-    event.preventDefault();
-    newItem = true
-    containerMain.insertAdjacentHTML('beforeend',docHtmlItem(document.querySelectorAll("[docItem]").length));
-    localStorage.setItem('cantDoc', document.querySelectorAll("[docItem]").length);
-    const last = Array.from(document.querySelectorAll("[docItem]")).pop();
-    drag(event, last, newItem)
-    listenItems()
-});
-
-listenItems()
-
+dragEvent(tool,HtmlItem,insertItem)
 
 class Document extends HTMLElement {
     constructor() {
         super();
-        
         this.main = document.getElementsByTagName("main")[0]
         
+        this.docTitle = JSON.parse(localStorage.getItem(`${this.getAttribute("id")}title`)) || "New Document"
+        this.docData = JSON.parse(localStorage.getItem(`${this.getAttribute("id")}`)) || ""
+
+
     }
 
     connectedCallback() {
@@ -150,14 +38,56 @@ class Document extends HTMLElement {
             posY: "160px",
             posX: "0px"
         }
-
         this.style.top = this.firstPos.posY
         this.style.left = this.firstPos.posX
-        
-        this.printDocs();
-        //this.drag()
 
-                
+        this.printDocs();
+       
+    }
+
+    disconnectedCallback() {
+        console.log('Document REMOVED TO THE DOM');
+    }
+
+    /* metodos */
+
+    /*====================================================================================================================================*/
+
+
+    printDocs(){
+        this.innerHTML =
+        `<svg class="mb-4" height="80" viewBox="0 0 60 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 8C4 5.79086 5.79086 4 8 4H42L56 18V64C56 66.2091 54.2091 68 52 68H8C5.79086 68 4 66.2091 4 64L4 8Z" fill="#39383E"/>
+        <path d="M42 4L56 18H42V4Z" fill="#424147"/>
+        <path d="M43.4142 2.58579L42.8284 2H42H8C4.68629 2 2 4.68629 2 8V64C2 67.3137 4.68629 70 8 70H52C55.3137 70 58 67.3137 58 64V18V17.1716L57.4142 16.5858L43.4142 2.58579Z" class="doc_outline" />
+        <path d="M31 30L43 30" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M31 38L43 38" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M17 46H43" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M24.6467 28.4062V31.2734H24.3655C24.1988 30.612 24.0139 30.138 23.8108 29.8516C23.6076 29.5599 23.329 29.3281 22.9748 29.1562C22.7769 29.0625 22.4306 29.0156 21.9358 29.0156H21.1467V37.1875C21.1467 37.7292 21.1753 38.0677 21.2326 38.2031C21.2951 38.3385 21.4123 38.4583 21.5842 38.5625C21.7613 38.6615 22.0009 38.7109 22.303 38.7109H22.6545V39H17.1076V38.7109H17.4592C17.7665 38.7109 18.0139 38.6562 18.2014 38.5469C18.3368 38.474 18.4436 38.349 18.5217 38.1719C18.579 38.0469 18.6076 37.7188 18.6076 37.1875V29.0156H17.842C17.1285 29.0156 16.6102 29.1667 16.2873 29.4688C15.8342 29.8906 15.5477 30.4922 15.428 31.2734H15.1311V28.4062H24.6467Z" fill="white"/>
+        </svg>
+        <h2 ${this.getAttribute("id")}title class="title doc__title-board f-st2 fw-6 c-c4" placeholder="Add a title..." contenteditable="true">${this.docTitle}</h2>`;
+        this.main.insertAdjacentHTML('afterend', 
+        `<div class="modal micromodal-slide" id="${this.getAttribute("id")}item" aria-hidden="true">
+            <div class="modal__overlay" tabindex="-1">
+                <div class="modal__container bg-c4 br-12 mx-24" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
+                <header class="modal__header px-24 py-28">
+                    <h2 ${this.getAttribute("id")}title class="title f-st1 c-white" placeholder="Add a title..." contenteditable="true">${this.docTitle}</h2>
+                    <button class="modal__close c-white" aria-label="Close modal" data-micromodal-close/>
+                </header>
+                <main class="modal__content c-white" id="modal-1-content">
+                    <div id="${this.getAttribute("id")}editor">${this.docData}</div>
+                </main>
+                </div>
+            </div>
+        </div>`);
+        
+        this.obsChanges()
+    }
+
+    /*====================================================================================================================================*/
+
+    obsChanges(){
+
         var quill = new Quill(`#${this.getAttribute("id")}editor`, {
             modules: {
             toolbar: [
@@ -180,51 +110,32 @@ class Document extends HTMLElement {
             },
             theme: 'snow'
         });
-
-
-        var delta = quill.getContents();
-        console.log(delta)
-        
-        this.querySelector("[btnModal]").addEventListener('dblclick', () =>{
-
-            console.log(`${this.getAttribute("id")}`)
-            MicroModal.show(`${this.getAttribute("id")}item`);
-            delta = quill.getContents();
-            console.log(delta)
-        });
-        //console.log(this.dragItems)
-    }
-
-    disconnectedCallback() {
-        console.log('Document REMOVED TO THE DOM');
-    }
-
-    /* metodos */
-
-    /*====================================================================================================================================*/
-
-
-    printDocs(){
-        this.innerHTML =`<img btnModal class="doc__img" src="./assets/img/btnDocument.svg" alt="">`;
-        this.main.insertAdjacentHTML('afterend', 
-        `<div class="modal micromodal-slide" id="${this.getAttribute("id")}item" aria-hidden="true">
-            <div class="modal__overlay" tabindex="-1">
-                <div class="modal__container bg-c4 br-12 mx-24" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
-                <header class="modal__header px-24 py-28">
-                    <h2 id="modal-1-title" class="title f-st1 c-white" placeholder="Add a title..." contenteditable="true">New Document</h2>
-                    <button class="modal__close c-white" aria-label="Close modal" data-micromodal-close/>
-                </header>
-                <main class="modal__content c-white" id="modal-1-content">
-                    <div id="${this.getAttribute("id")}editor"></div>
-                </main>
-                </div>
-            </div>
-        </div>`);
     
+        let docId = this.getAttribute("id")
+        
+        this.addEventListener('dblclick', () =>{
+            MicroModal.show(`${docId}item`);
+            
+        });
+
+        document.querySelector(`#${docId}editor`).addEventListener('DOMSubtreeModified', (e)=>{
+            localStorage.setItem(`${docId}`, JSON.stringify(quill.root.innerHTML));
+        })
+
+        document.querySelector(`#${docId}item`).addEventListener('click', (e)=>{
+            console.log(quill.root.innerHTML)
+            localStorage.setItem(`${docId}`, JSON.stringify(quill.root.innerHTML));
+        })
+
+        document.querySelectorAll(`[${docId}title]`).forEach(function(elem) {
+            elem.addEventListener('DOMSubtreeModified', (e)=>{
+                localStorage.setItem(`${id}title`, JSON.stringify(e.target.data));
+            })
+        });
+
     }
 
     /*====================================================================================================================================*/
-
 }
 window.customElements.define('document-item', Document);
 

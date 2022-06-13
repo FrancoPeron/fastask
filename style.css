@@ -121,9 +121,9 @@ body{
   stroke-linecap:round;
 }
 
+
+
 /*==============================================*/
-
-
 .board{
   grid-area: board;
   position: relative;
@@ -132,25 +132,19 @@ body{
   background-image: url(./assets/img/grid.svg);
 }
 
-
-
+/*==============================================*/
 .todoItem{
   position: absolute;
   left: 62px;
   top: 120px;
   width: 330px;
 }
-
-.documentItem{
-  position: absolute;
-  left: 160px;
-  top: 200px;
-  
+.itemMoveEditable.todoItem{
+  outline: solid 4px var(--cBlanco);
 }
 
-.doc__img{
-  height: 80px;
-
+.todolist{
+  width: 400px;
 }
 
 [contenteditable="true"].task{
@@ -202,6 +196,46 @@ input[type='checkbox']:checked:after {
 }
 
 
+/*==============================================*/
+.documentItem{
+  position: absolute;
+  left: 160px;
+  top: 200px;
+  
+}
+.itemMoveEditable.documentItem .doc_outline{
+  stroke: var(--cBlanco);
+  stroke-width: 4;
+}
+.doc__title-board{
+  text-shadow: -.6px 0 rgba(255, 255, 255, 0.497), 0 .6px rgba(255, 255, 255, 0.456), .6px 0 rgba(255, 255, 255, 0.489), 0 -.6px rgba(255, 255, 255, 0.489);
+}
+
+
+/*==============================================*/
+.imgItem{
+  position: absolute;
+  left: 160px;
+  top: 200px;
+  width: 400px;
+  min-width: 300px;
+  max-width: 700px;
+  min-height: 300px;
+  max-height: 700px;
+  resize: both;
+  overflow: hidden;
+}
+.itemMoveEditable.imgItem{
+  outline: solid 4px var(--cBlanco);
+}
+.imgItem img{
+  min-height: inherit;
+}
+::-webkit-resizer {
+  background-image: url(./assets/img/resizer.svg);
+}
+
+
 /*------------trash------------*/
 
 .trash{
@@ -220,10 +254,6 @@ input[type='checkbox']:checked:after {
   stroke-width:2.5px;
 }
 
-.todolist{
-  width: 400px;
-}
-
 .trashOpacity{
   opacity: .8;
   transform: scale(.9);
@@ -232,33 +262,12 @@ input[type='checkbox']:checked:after {
 
 
 
-.imgItem{
-  position: absolute;
-  left: 160px;
-  top: 200px;
-  width: 400px;
-  min-width: 300px;
-  max-width: 700px;
-  min-height: 300px;
-  max-height: 700px;
-  resize: both;
-  overflow: hidden;
-}
-.imgItem img{
-  min-height: inherit;
-}
 
 
 
-
-.itemMoveEditable{
-  outline: solid 3px var(--cBrand1);
-}
-
-
-
-.itemMoveBlock ::after{
+.itemMoveBlock::after{
   content: "";
+  cursor: pointer;
   position: absolute;
   top: 0;
   left: 0;
@@ -266,9 +275,3 @@ input[type='checkbox']:checked:after {
   height: 100%;
 }
 
-::-webkit-resizer {
- 
-
-  background-image: url(./assets/img/resizer.svg);
-
-}

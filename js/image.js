@@ -1,3 +1,8 @@
+import { dragEvent } from "./dragEvents.js";
+let tool = "img";
+let HtmlItem = (val)=>{ return `<image-item imgItem id="img${val}" class="flex imgItem shadow z-20"></image-item>`}
+
+/* ========== ToogleImg ========== */
 
 let btnImg = (document.querySelector("[btnImg]"))
 let boxImg = (document.querySelector("[boxImg]"))
@@ -10,166 +15,100 @@ btnImg.addEventListener('click', e =>{
     }
 });
 
-let containerMain = document.querySelector("[board]");
+function insertItem(drag,listenItems) {
 
-let inputSearch = document.querySelector("[inputSearch]")
-inputSearch.addEventListener("keyup",(e)=>{
-    getUser();
-})
+    
+    let containerMain = document.querySelector("[board]");
+    let inputSearch = document.querySelector("[inputSearch]")
+    let randomImgUrl = `https://api.unsplash.com/photos?client_id=btXOFRZKl5DqSAUkiX3C7gDBD7odWcz5_t4dU2ChBMI`
+    
+    /* ========== GetImgs ========== */
+    const getImgs = async (url)=> {
+        console.log(url)
+        const options = {
+            method: "GET",
+            headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json"
+            }
+        };
+        try {
+            const response = await fetch(`${url}`, options)
+            const result = await response.text();
+            const data = await JSON.parse(result);
+            console.log(response)
+            console.log(data.results)
+            
+            unplashImgs.innerHTML = ""
+            for (let index = 0; index < data.results.length; index++) {
+                unplashImgs.insertAdjacentHTML('beforeend',`<img class="unplash__img" src="${data.results[index].urls.regular}" alt="">`);
+            }
 
-const getUser = async ()=> {
+            
+            for (let index = 0; index < document.querySelectorAll(".unplash__img").length; index++) {
+                document.querySelectorAll(".unplash__img")[index].addEventListener('click', e =>{
+                    boxImg.style.display = "none";
+                    console.log(e.target.currentSrc)
+                    localStorage.setItem(`img${document.querySelectorAll(`[${tool}Item]`).length}`, e.target.currentSrc);
 
-    const options = {
-        method: "GET",
-        headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json"
-        }
-    };
-    try {
-        const response = await fetch(`https://api.unsplash.com/search/photos/?query=${(inputSearch.value).toString()}&client_id=btXOFRZKl5DqSAUkiX3C7gDBD7odWcz5_t4dU2ChBMI`, options)
-        const result = await response.text();
-        const data = await JSON.parse(result);
-        console.log(response)
+                    containerMain.insertAdjacentHTML('beforeend',HtmlItem(document.querySelectorAll(`[${tool}Item]`).length));
+                    localStorage.setItem(`cant-${tool}s`, document.querySelectorAll(`[${tool}Item]`).length);
 
-
-        unplashImgs.innerHTML = ""
-        for (let index = 0; index < data.results.length; index++) {
-            unplashImgs.insertAdjacentHTML('beforeend',`<img class="unplash__img" src="${data.results[index].urls.regular}" alt="">`);
-            console.log(33)
-        }
-
-        let itemImg = (document.querySelectorAll(".unplash__img"))
-        console.log(itemImg)
-        for (let index = 0; index < itemImg.length; index++) {
-            itemImg[index].addEventListener('click', e =>{
-                // console.log(e.target.currentSrc)
-                containerMain.insertAdjacentHTML('beforeend',`<image-item srcimg="${e.target.currentSrc}" class="flex imgItem shadow z-20"></image-item>`);
+                    const last = Array.from(document.querySelectorAll(`[${tool}Item]`)).pop();
+                    //drag(e, last, false)
+                    listenItems()
+                });
+            }
                 
-                boxImg.style.display = "none";
-            });
+        } catch (err) {
+            console.log(err)
         }
-
-      
-    } catch (err) {
-        console.log(err)
     }
+
+    getImgs(randomImgUrl);
+    inputSearch.addEventListener("keyup",(e)=>{
+        let searchImgUrl = `https://api.unsplash.com/search/photos/?per_page=30&query=${(inputSearch.value).toString()}&client_id=btXOFRZKl5DqSAUkiX3C7gDBD7odWcz5_t4dU2ChBMI`
+        getImgs(searchImgUrl);
+    })
+
+
 }
+dragEvent(tool,HtmlItem,insertItem)
 
 
 class Image extends HTMLElement {
     constructor() {
         super();
+        
+        this.srcImg = localStorage.getItem(`${this.getAttribute("id")}`);
+    }
+
+    connectedCallback() {
+        console.log(`${this.getAttribute("id")} ADDED TO THE DOM`);
+        /* ============================================================*/
 
         this.firstPos = JSON.parse(localStorage.getItem(`${this.getAttribute("id")}Pos`)) || {
             posY: "200px",
             posX: "160px"
         }
-
-        this.positions = {
-            clientX: undefined,
-            clientY: undefined,
-            movementX: 0,
-            movementY: 0
-        }
-
-        this.draggeable = true
-        
-        this.main = document.getElementsByTagName("main")[0]
-        
-    }
-
-    connectedCallback() {
-        console.log(`${this.getAttribute("id")} ADDED TO THE DOM`);
-        console.log(this);
-        this.setAttribute('draggable', false);
         this.style.top = this.firstPos.posY
         this.style.left = this.firstPos.posX
 
-        const drag = (event) => {
-
-            setTimeout(() => {
-                event.preventDefault();
-                //console.log(this)
-                // get the mouse cursor position at startup:
-                this.positions.clientY = event.clientY
-                this.positions.clientX = event.clientX
-    
-                document.onmousemove = (event)=> {
-                    
-                    console.log()
-                    event.preventDefault()
-                    this.positions.movementY = this.positions.clientY - event.clientY
-                    this.positions.movementX = this.positions.clientX - event.clientX
-                    this.positions.clientX = event.clientX
-                    this.positions.clientY = event.clientY
-                    // set the element's new position:
-                    this.style.top = ( this.offsetTop - this.positions.movementY) + "px"
-                    this.style.left = ( this.offsetLeft - this.positions.movementX) + "px"
-    
-                    let pos = {
-                        posY: this.style.top,
-                        posX: this.style.left
-                    }
-                    
-                    //localStorage.setItem(`${this.getAttribute("id")}Pos`, JSON.stringify(pos));
-                    
-                }
-                document.onmouseup = ()=> {
-                    document.onmouseup = null
-                    document.onmousemove = null
-                }
-    
-            }, 10);
-    
-            
-        }
-
-        this.addEventListener('mousedown', drag)
-        this.addEventListener('dblclick', e =>{
-            if(this.draggeable == true) {
-                console.log(this.draggable)
-                this.removeEventListener('mousedown', drag)
-                this.draggeable = false
-            } else {
-                this.addEventListener('mousedown', drag)
-                console.log(this.draggable)
-                this.draggeable = true
-                
-            }
-        });
-
-     
-        
+        this.printImg()
 
     }
-
-    static get observedAttributes() {
-        return ["srcimg"];
-      }
-      attributeChangedCallback(name, oldValue, newValue) {
-        this.printImg(newValue)
-      }
-
-    disconnectedCallback() {
-        console.log('Todo REMOVED TO THE DOM');
-    }
-
     /* metodos */
 
     /*====================================================================================================================================*/
 
 
-    printImg(newValue){
-        this.innerHTML =`<img class="w-100 h-100 object-cover" draggable="false" src="${newValue}" alt="">`;
+    printImg(){
+        this.innerHTML =`<img class="w-100 h-100 object-cover" draggable="false" src="${this.srcImg}" alt="">`;
     
     }
 
     /*====================================================================================================================================*/
 
-    
-
- 
     /*====================================================================================================================================*/
 
 }
