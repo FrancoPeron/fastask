@@ -28,10 +28,10 @@
         <nav toolbar class="toolbar sticky flex-column-nowrap justify-start bg-c4 z-10">
     
           <ul class="flex-column-wrap align-items-center px-16 py-20 flex-fill space-y-20">
-            <li btnText><img class="nav__btn" src="./assets/img/btnText.svg" alt=""></li>
-            <li btn-todo><img class="nav__btn" src="./assets/img/btnTodo.svg" alt=""></li>
-            <li btnImg><img class="nav__btn" src="./assets/img/btnImg.svg" alt=""></li>
-            <li btn-doc><img class="nav__btn" src="./assets/img/btnDocument.svg" alt=""></li>
+            <li btn-text><img draggable="false" class="nav__btn" src="./assets/img/btnText.svg" alt=""></li>
+            <li btn-todo><img draggable="false" class="nav__btn" src="./assets/img/btnTodo.svg" alt=""></li>
+            <li btn-img><img draggable="false" class="nav__btn" src="./assets/img/btnImg.svg" alt=""></li>
+            <li btn-doc><img draggable="false" class="nav__btn" src="./assets/img/btnDocument.svg" alt=""></li>
           </ul>
   
           <ul class="flex-column-wrap align-items-center px-16 py-20">
@@ -59,11 +59,10 @@
 
     </main>
     <script type="module" src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-
     <script type="module" src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
-    <script type="module" src="./js/micromodal.js"></script>
     
     <script type="module" src="./main.js"></script>
+    <script type="module" src="./js/text.js"></script>
     <script type="module" src="./js/todo.js"></script>
     <script type="module" src="./js/document.js"></script>
     <script type="module" src="./js/image.js"></script>

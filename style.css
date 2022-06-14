@@ -48,7 +48,6 @@ body{
 }
 
 .header{
- 
   height: 100%;
   
 }
@@ -131,13 +130,35 @@ body{
   width: 100%;
   background-image: url(./assets/img/grid.svg);
 }
+.textItem{
+  position: absolute;
+  left: 62px;
+  top: 120px;
+  width: 400px;
+
+}
+.itemMoveEditable.textItem{
+  outline: solid 4px var(--cBlanco);
+}
+
+.text-modal{
+  height: fit-content;
+}
+.text-modal .ql-toolbar, .text-modal .ql-editor{
+  padding: 0;
+}
+
+.text-modal .ql-formats{
+  margin-right: 1rem !important;
+}
+
 
 /*==============================================*/
 .todoItem{
   position: absolute;
   left: 62px;
   top: 120px;
-  width: 330px;
+  width: 400px;
 }
 .itemMoveEditable.todoItem{
   outline: solid 4px var(--cBlanco);
@@ -164,7 +185,6 @@ body{
   text-transform: none;
 }
 
-
 .done {
   color: var(--cGrey7);
   text-decoration: line-through;
@@ -180,7 +200,7 @@ input[type='checkbox']:after{
   content: '';
   background-color: var(--cBrand4);
   border-radius: 0.25em;
-  border: solid 2px var(--cBrand1);
+  border: solid 2px var(--cBlanco);
   width: 16px;
   height: 16px;
   position: absolute;
@@ -192,7 +212,27 @@ input[type='checkbox']:checked:after {
 
   content: url(./assets/img/Tick.svg);
   background-color: var(--cBrand1);
+  border: solid 2px var(--cBrand1);
 
+}
+
+.trash{
+  height: 26px;
+  width: 26px;
+  cursor: pointer;
+}
+.trash-a,.trash-b{
+  fill:none;
+  stroke:var(--cBlanco);
+}
+.trash:hover .trash-a,.trash:hover  .trash-b{
+  stroke:var(--cBrand1);
+}
+.trash-a,.trash-c{
+  stroke-linecap:round;
+}
+.trash-a,.trash-b{
+  stroke-width:2.5px;
 }
 
 
@@ -236,23 +276,8 @@ input[type='checkbox']:checked:after {
 }
 
 
-/*------------trash------------*/
+/*==============================================*/
 
-.trash{
-  height: 26px;
-  width: 26px;
-  cursor: pointer;
-}
-.trash-a,.trash-b{
-  fill:none;
-  stroke:var(--cBrand1);
-}
-.trash-a,.trash-c{
-  stroke-linecap:round;
-}
-.trash-a,.trash-b{
-  stroke-width:2.5px;
-}
 
 .trashOpacity{
   opacity: .8;
@@ -260,10 +285,7 @@ input[type='checkbox']:checked:after {
   transition: all .2s ease-out;
 }
 
-
-
-
-
+/*==============================================*/
 
 .itemMoveBlock::after{
   content: "";

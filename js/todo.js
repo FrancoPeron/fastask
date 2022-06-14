@@ -18,9 +18,6 @@ function insertItem(drag,listenItems) {
 
 dragEvent(tool,HtmlItem,insertItem)
 
-console.log(dragEvent)
-//console.log(dragEvent.drag())
-
 /*----------------------------------*/
 
 class ToDoList extends HTMLElement {
@@ -50,7 +47,7 @@ class ToDoList extends HTMLElement {
     }
 
     disconnectedCallback() {
-        console.log('Todo REMOVED TO THE DOM');
+        console.info('Todo REMOVED TO THE DOM');
     }
 
     /* metodos */

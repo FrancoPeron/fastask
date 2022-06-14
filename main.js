@@ -6,6 +6,11 @@
 //   console.debug(data)
 // );
 
+const MicroModal = window.MicroModal;
+MicroModal.init();
+
+
+
 let containerMain = document.querySelector("[board]");
 
 

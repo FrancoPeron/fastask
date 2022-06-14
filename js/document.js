@@ -41,8 +41,8 @@ class Document extends HTMLElement {
         this.style.top = this.firstPos.posY
         this.style.left = this.firstPos.posX
 
-        this.printDocs();
-       
+        this.printDocs(this.docTitle);
+        
     }
 
     disconnectedCallback() {
@@ -55,6 +55,7 @@ class Document extends HTMLElement {
 
 
     printDocs(){
+        
         this.innerHTML =
         `<svg class="mb-4" height="80" viewBox="0 0 60 72" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M4 8C4 5.79086 5.79086 4 8 4H42L56 18V64C56 66.2091 54.2091 68 52 68H8C5.79086 68 4 66.2091 4 64L4 8Z" fill="#39383E"/>
@@ -80,7 +81,6 @@ class Document extends HTMLElement {
                 </div>
             </div>
         </div>`);
-        
         this.obsChanges()
     }
 
@@ -115,7 +115,7 @@ class Document extends HTMLElement {
         
         this.addEventListener('dblclick', () =>{
             MicroModal.show(`${docId}item`);
-            
+            //this.printDocs();
         });
 
         document.querySelector(`#${docId}editor`).addEventListener('DOMSubtreeModified', (e)=>{
@@ -123,15 +123,23 @@ class Document extends HTMLElement {
         })
 
         document.querySelector(`#${docId}item`).addEventListener('click', (e)=>{
-            console.log(quill.root.innerHTML)
             localStorage.setItem(`${docId}`, JSON.stringify(quill.root.innerHTML));
         })
 
-        document.querySelectorAll(`[${docId}title]`).forEach(function(elem) {
-            elem.addEventListener('DOMSubtreeModified', (e)=>{
-                localStorage.setItem(`${id}title`, JSON.stringify(e.target.data));
+        let titles = document.querySelectorAll(`[${docId}title]`)
+        for (let index = 0; index < titles.length; index++) {
+            titles[index].addEventListener('keyup', (e)=>{
+                this.docTitle = e.target.innerHTML
+                localStorage.setItem(`${docId}title`, JSON.stringify(this.docTitle));
+                if(titles[index] == titles[0]) titles[1].innerHTML= this.docTitle
+                
             })
-        });
+            
+        }
+
+        document.querySelector('[aria-label="Close modal"]').addEventListener("click", (e)=>{
+            this.printDocs()
+        })
 
     }
 

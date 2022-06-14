@@ -4,7 +4,7 @@ let HtmlItem = (val)=>{ return `<image-item imgItem id="img${val}" class="flex i
 
 /* ========== ToogleImg ========== */
 
-let btnImg = (document.querySelector("[btnImg]"))
+let btnImg = (document.querySelector("[btn-img]"))
 let boxImg = (document.querySelector("[boxImg]"))
 boxImg.style.display = "none";
 btnImg.addEventListener('click', e =>{
@@ -17,14 +17,15 @@ btnImg.addEventListener('click', e =>{
 
 function insertItem(drag,listenItems) {
 
-    
     let containerMain = document.querySelector("[board]");
     let inputSearch = document.querySelector("[inputSearch]")
-    let randomImgUrl = `https://api.unsplash.com/photos?client_id=btXOFRZKl5DqSAUkiX3C7gDBD7odWcz5_t4dU2ChBMI`
+    let client_id = "client_id=btXOFRZKl5DqSAUkiX3C7gDBD7odWcz5_t4dU2ChBMI"
+    let imgsArray
+    
     
     /* ========== GetImgs ========== */
-    const getImgs = async (url)=> {
-        console.log(url)
+    const getImgs = async (path)=> {
+        
         const options = {
             method: "GET",
             headers: {
@@ -33,18 +34,16 @@ function insertItem(drag,listenItems) {
             }
         };
         try {
-            const response = await fetch(`${url}`, options)
-            const result = await response.text();
-            const data = await JSON.parse(result);
-            console.log(response)
-            console.log(data.results)
+            const response = await fetch(`https://api.unsplash.com/${path}&${client_id}`, options)
+            const result = await response.json();
+            (path == randomPath) ? imgsArray = result : imgsArray = result.results
             
             unplashImgs.innerHTML = ""
-            for (let index = 0; index < data.results.length; index++) {
-                unplashImgs.insertAdjacentHTML('beforeend',`<img class="unplash__img" src="${data.results[index].urls.regular}" alt="">`);
+            for (let index = 0; index < imgsArray.length; index++) {
+                unplashImgs.insertAdjacentHTML('beforeend',`<img class="unplash__img" src="${imgsArray[index].urls.regular}" alt="">`);
             }
 
-            
+            /* ==========  ========== */
             for (let index = 0; index < document.querySelectorAll(".unplash__img").length; index++) {
                 document.querySelectorAll(".unplash__img")[index].addEventListener('click', e =>{
                     boxImg.style.display = "none";
@@ -64,17 +63,24 @@ function insertItem(drag,listenItems) {
             console.log(err)
         }
     }
-
-    getImgs(randomImgUrl);
+    
+    let randomPath = `photos/?per_page=30`
+    getImgs(randomPath);
     inputSearch.addEventListener("keyup",(e)=>{
-        let searchImgUrl = `https://api.unsplash.com/search/photos/?per_page=30&query=${(inputSearch.value).toString()}&client_id=btXOFRZKl5DqSAUkiX3C7gDBD7odWcz5_t4dU2ChBMI`
-        getImgs(searchImgUrl);
+        console.log(inputSearch.value)
+        if ((inputSearch.value).toString() != "") {
+            let searchPath = `search/photos/?per_page=30&query=${inputSearch.value}`
+            getImgs(searchPath);
+        }else{
+            getImgs(randomPath);
+
+        }
+
     })
 
 
 }
 dragEvent(tool,HtmlItem,insertItem)
-
 
 class Image extends HTMLElement {
     constructor() {
@@ -94,8 +100,17 @@ class Image extends HTMLElement {
         this.style.top = this.firstPos.posY
         this.style.left = this.firstPos.posX
 
-        this.printImg()
+        this.size = JSON.parse(localStorage.getItem(`${this.getAttribute("id")}Size`)) || {
+            width : "auto",
+            height: "auto"
+        }
 
+        this.style.width = this.size.width + "px"
+        this.style.height = this.size.height + "px"
+
+
+        this.printImg()
+        this.obsSize()
     }
     /* metodos */
 
@@ -108,7 +123,18 @@ class Image extends HTMLElement {
     }
 
     /*====================================================================================================================================*/
+    obsSize(){
+        new ResizeObserver(() => {
 
+            this.size.width = this.offsetWidth
+            this.size.height = this.offsetHeight
+
+            localStorage.setItem(`${this.getAttribute("id")}Size`, JSON.stringify(this.size));
+            console.log(this.offsetWidth)
+
+        }).observe(this);
+        
+    }
     /*====================================================================================================================================*/
 
 }
