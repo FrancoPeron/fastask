@@ -1,4 +1,6 @@
 import { dragEvent } from "./dragEvents.js";
+// import { Quill } from "./quill.js"
+import Quill from 'quill';
 let tool = "text";
 let HtmlItem = (val)=>{ return `<text-item textItem id="text${val}" class="textItem p-24 br-4 shadow bg-c4 z-20"></text-item>`}
 

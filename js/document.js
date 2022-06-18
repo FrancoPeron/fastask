@@ -1,4 +1,6 @@
 import { dragEvent } from "./dragEvents.js";
+//import { Quill } from "./quill.js"
+import Quill from 'quill';
 let tool = "doc";
 let HtmlItem = (val)=>{ return `<document-item docItem id="doc${val}" class="documentItem flex-column-nowrap align-items-center z-20"></document-item>`}
 
@@ -18,6 +20,8 @@ function insertItem(drag,listenItems) {
 }
 
 dragEvent(tool,HtmlItem,insertItem)
+
+// import { Quill } from "quill"
 
 class Document extends HTMLElement {
     constructor() {
