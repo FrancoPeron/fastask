@@ -1,4 +1,8 @@
 
+import "./js/micromodal.min.js"
 
-const MicroModal = window.MicroModal;
-MicroModal.init();
+import "./js/text.js"
+import "./js/todo.js"
+import "./js/document.js"
+import "./js/image.js"
+
