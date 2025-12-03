@@ -1,73 +1,79 @@
-<!DOCTYPE html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- <link rel="stylesheet" href="./node_modules/skan-css/skan.css"> -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="./assets/css/skan.css">
-    <link rel="stylesheet" href="./assets/css/micromodal.css">
-    <link rel="stylesheet" href="./assets/css/quill.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="./assets/css/skan.css" />
+    <link rel="stylesheet" href="./assets/css/micromodal.css" />
+    <link rel="stylesheet" href="./assets/css/quill.css" />
+    <link rel="stylesheet" href="style.css" />
 
     <title>Vite App</title>
   </head>
   <body class="bg-g3">
-    
     <main id="main" class="main">
-
-      <nav class="nav flex-row-wrap justify-between align-items-center sticky left-0 bg-c4 shadow w-100 z-100">
-        <header class="header flex-row-nowrap justify-center align-items-center"><img class="h-100" src="./assets/img/logo.png" alt=""></header>
-      </nav>
+      <!-- Header superior removido: se mantiene solo la barra de herramientas izquierda -->
 
       <div board class="board z-0">
         <nav toolbar class="toolbar sticky flex-column-nowrap justify-start bg-c4 z-10">
-    
           <ul class="flex-column-wrap align-items-center px-16 py-20 flex-fill space-y-20">
-            <li btn-text><img draggable="false" class="nav__btn" src="./assets/img/btnText.svg" alt=""></li>
-            <li btn-todo><img draggable="false" class="nav__btn" src="./assets/img/btnTodo.svg" alt=""></li>
-            <li btn-img><img draggable="false" class="nav__btn" src="./assets/img/btnImg.svg" alt=""></li>
-            <li btn-doc><img draggable="false" class="nav__btn" src="./assets/img/btnDocument.svg" alt=""></li>
+            <li btn-text>
+              <img draggable="false" class="nav__btn" src="./assets/img/btnText.svg" alt="" />
+            </li>
+            <li btn-todo>
+              <img draggable="false" class="nav__btn" src="./assets/img/btnTodo.svg" alt="" />
+            </li>
+            <li btn-img>
+              <img draggable="false" class="nav__btn" src="./assets/img/btnImg.svg" alt="" />
+            </li>
+            <li btn-doc>
+              <img draggable="false" class="nav__btn" src="./assets/img/btnDocument.svg" alt="" />
+            </li>
           </ul>
-  
+
           <ul class="flex-column-wrap align-items-center px-16 py-20">
-            <li btnTrash><img class="nav__btn" src="./assets/img/btnTrash.svg" alt=""></li>
+            <li btnTrash><img class="nav__btn" src="./assets/img/btnTrash.svg" alt="" /></li>
           </ul>
-          
         </nav>
 
         <div boxImg class="box-img hidden flex-column bg-c4 shadow br-4 p-16">
           <div class="flex-row-nowrap">
-            <input inputSearch class="input" placeholder="Search" type="search" name="">
-            
-            <svg class="buscador-header" xmlns="http://www.w3.org/2000/svg" width="25.95" height="27.016" viewBox="0 0 25.95 27.016">
-            <g transform="translate(1.25 1.25)">
-                <circle class="buscador-icon" cx="9.6" cy="9.6" r="9.6" transform="translate(0)"/>
-                <line class="buscador-icon" x2="6.449" y2="6.982" transform="translate(16.484 17.018)"/>
-            </g>
+            <input inputSearch class="input" placeholder="Search" type="search" name="" />
+
+            <svg
+              class="buscador-header"
+              xmlns="http://www.w3.org/2000/svg"
+              width="25.95"
+              height="27.016"
+              viewBox="0 0 25.95 27.016"
+            >
+              <g transform="translate(1.25 1.25)">
+                <circle class="buscador-icon" cx="9.6" cy="9.6" r="9.6" transform="translate(0)" />
+                <line
+                  class="buscador-icon"
+                  x2="6.449"
+                  y2="6.982"
+                  transform="translate(16.484 17.018)"
+                />
+              </g>
             </svg>
           </div>
-          
+
           <div id="unplashImgs" class="unplash_imgs"></div>
         </div>
-
       </div>
-
     </main>
-    <script type="module" src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-    <script type="module" src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
-    
-    <script type="module" src="./main.js"></script>
-    <script type="module" src="./js/text.js"></script>
-    <script type="module" src="./js/todo.js"></script>
-    <script type="module" src="./js/document.js"></script>
-    <script type="module" src="./js/image.js"></script>
-
-    
-    
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>

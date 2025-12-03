@@ -4,12 +4,12 @@
 
 <h3 align="center">
 
-  [www.fastask.netlify.app](https://fastask.netlify.app)
+[www.fastask.netlify.app](https://fastask.netlify.app)
+
 </h3>
 
 ![Product Name Screen Shot]()
 <br>
-
 
 <!-- TABLE OF CONTENTS -->
 <!-- <details>
@@ -37,17 +37,15 @@
   </ol>
 </details> -->
 
-
-
 ## About The Project
 
 There are many great README templates available on GitHub; however, I didn't find one that really suited my needs so I created this enhanced one. I want to create a README template so amazing that it'll be the last one you ever need -- I think this is it.
 
 Here's why:
-* Your time should be focused on creating something amazing. A project that solves a problem and helps others
-* You shouldn't be doing the same tasks over and over like creating a README from scratch
-* You should implement DRY principles to the rest of your life :smile:
 
+- Your time should be focused on creating something amazing. A project that solves a problem and helps others
+- You shouldn't be doing the same tasks over and over like creating a README from scratch
+- You should implement DRY principles to the rest of your life :smile:
 
 ### Built With
 
@@ -60,7 +58,6 @@ This section should list any major frameworks/libraries used to bootstrap your p
 [![Netlify][Netlify.js]][Netlify-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 ## Getting Started
 
@@ -82,16 +79,13 @@ To get a local copy up and running follow these simple example steps.
    npm run dev
    ```
 
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- USAGE EXAMPLES -->
+
 ## Usage
 
 Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -115,23 +109,14 @@ Project Link: [https://github.com/your_username/repo_name](https://github.com/yo
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
-
-
-
-
 [Figma.js]: https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white
 [Figma-url]: https://www.figma.com/
-
 [Vite.js]: https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E
 [Vite-url]: https://vitejs.dev
 [Netlify.js]: https://img.shields.io/badge/Netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white
 [Netlify-url]: https://app.netlify.com/
 [javascript]: https://img.shields.io/badge/JavaScript-323330?style=for-the-badge&logo=javascript&logoColor=F7DF1E
 [javascript-url]: https://svelte.dev/
-
-
 [Linkedin.js]: https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white
 [linkedin-url]: https://www.figma.com/
 [Dribbble.js]: https://img.shields.io/badge/Dribbble-EA4C89?style=for-the-badge&logo=dribbble&logoColor=white

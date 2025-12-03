@@ -1,20 +1,17 @@
-
-:root{
-
+:root {
   --cBrand1: #5741ff;
   --cBrand2: #6e5bfb;
-  --cBrand3: #E8FFE6;
-  --cBrand4: #1B1A21;
-  
+  --cBrand3: #e8ffe6;
+  --cBrand4: #1b1a21;
+
   --cBrandVariant1: ;
   --cBrandVariant2: ;
   --cBrandVariant3: ;
-  --cBrandVariant4: #39383E;
+  --cBrandVariant4: #39383e;
 
   --container-custom: 1340px;
   --shadow-custom: 0px 4px 12px rgba(0, 0, 0, 0.16);
   --border-radius: 6px;
-
 }
 /* 
 --cBrand1: #41FFAD;
@@ -24,54 +21,51 @@
 
  */
 
-
-
-body{
+body {
   font-family: 'Rubik', sans-serif;
   font-weight: 300;
   background-color: var(--cBrand4);
 }
 
-.main{
+.main {
   display: grid;
   height: 100vh;
-  grid-template-rows: max-content;
-  grid-template-areas:  'navbar'
-                        'board';
+  /* Un solo área: el board ocupa todo el espacio (sin header superior) */
+  grid-template-rows: 1fr;
+  grid-template-areas: 'board';
 }
 
 /*==============================================*/
 
+/* .nav / .header se eliminaron del layout.
+   Mantengo aquí reglas por compatibilidad si se vuelven a necesitar. */
 .nav {
-  grid-area: navbar;
-  height: 60px;
+  display: none;
 }
-
-.header{
-  height: 100%;
-  
+.header {
+  display: none;
 }
 
 /*==============================================*/
 
-.toolbar{
+.toolbar {
   width: 70px;
   height: 100%;
   box-shadow: 0px 4px 8px 2px rgba(0, 0, 0, 0.16);
 }
 
-.toolbar > ul > li{
+.toolbar > ul > li {
   position: relative;
   overflow: hidden;
 }
 
-.nav__btn{
+.nav__btn {
   /* box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); */
   width: 100%;
   cursor: pointer;
 }
 
-.box-img{
+.box-img {
   position: absolute;
   z-index: 9999;
   top: 1rem;
@@ -80,23 +74,23 @@ body{
   height: calc(100vh - 2rem - 60px);
 }
 
-.unplash_imgs{
+.unplash_imgs {
   overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-
 }
 
-.unplash_imgs::-webkit-scrollbar{
+.unplash_imgs::-webkit-scrollbar {
   width: 0;
 }
 
-.unplash__img{
+.unplash__img {
   width: 100%;
 }
 
-.input, .textarea{
+.input,
+.textarea {
   width: 100%;
   position: relative;
   padding: 12px 2px;
@@ -104,81 +98,171 @@ body{
   background-color: transparent;
 }
 
-.input::placeholder, .textarea::placeholder{
+.input::placeholder,
+.textarea::placeholder {
   color: var(--cBlanco);
   font-size: 1rem;
 }
 
-.buscador-header{
+.buscador-header {
   height: 40px;
 }
 
-.buscador-icon{
-  fill:none;
-  stroke:var(--cBrand1);
-  stroke-width:3px;
-  stroke-linecap:round;
+.buscador-icon {
+  fill: none;
+  stroke: var(--cBrand1);
+  stroke-width: 3px;
+  stroke-linecap: round;
 }
 
-
-
 /*==============================================*/
-.board{
+.board {
   grid-area: board;
   position: relative;
   overflow: auto;
   width: 100%;
   background-image: url(./assets/img/grid.svg);
 }
-.textItem{
+.textItem {
   position: absolute;
   left: 62px;
   top: 120px;
   width: 400px;
-
+  min-width: 400px;
+  min-height: 116px;
+  resize: both;
+  overflow: auto;
+  pointer-events: auto;
 }
-.itemMoveEditable.textItem{
+
+.itemLocked.textItem {
   outline: solid 4px var(--cBlanco);
+  resize: none;
 }
 
-.text-modal{
+.itemSelected.textItem {
+  outline: solid 1px var(--cBlanco);
+}
+
+.item-lock-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  color: var(--cBlanco);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  z-index: 10;
+  display: none;
+}
+
+.item-lock-btn svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Candado visible al hover en items desbloqueados */
+.itemUnlocked:hover .item-lock-btn {
+  opacity: 1;
+}
+
+/* Candado siempre visible en items bloqueados */
+.itemLocked .item-lock-btn {
+  opacity: 1;
+  color: var(--cBrand1);
+}
+
+/* Menú contextual */
+.context-menu {
+  background-color: var(--cBrandVariant4);
+  border: 1px solid var(--cBlanco);
+  border-radius: 4px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 10000;
+  min-width: 150px;
+  overflow: hidden;
+}
+
+.context-menu-item {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  color: var(--cBlanco);
+  text-align: left;
+  cursor: pointer;
+  font-family: 'Rubik', sans-serif;
+  font-size: 14px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.context-menu-item:hover {
+  background-color: var(--cBrand1);
+  color: white;
+}
+
+.context-menu-item:not(:last-child) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.text-modal {
   height: fit-content;
 }
-.text-modal .ql-toolbar, .text-modal .ql-editor{
+.text-modal .ql-toolbar,
+.text-modal .ql-editor {
   padding: 0;
 }
 
-.text-modal .ql-formats{
+.text-modal .ql-formats {
   margin-right: 1rem !important;
 }
 
-
 /*==============================================*/
-.todoItem{
+.todoItem {
   position: absolute;
   left: 62px;
   top: 120px;
   width: 400px;
-}
-.itemMoveEditable.todoItem{
-  outline: solid 4px var(--cBlanco);
+  min-width: 400px;
+  min-height: 80px;
+  resize: both;
+  overflow: hidden;
+  pointer-events: auto;
 }
 
-.todolist{
+.itemLocked.todoItem {
+  outline: solid 4px var(--cBlanco);
+  resize: none;
+}
+
+.itemSelected.todoItem {
+  outline: solid 1px var(--cBlanco);
+}
+
+.todolist {
   width: 400px;
 }
 
-[contenteditable="true"].task{
+[contenteditable='true'].task {
   outline: none;
-  width:100%;
+  width: 100%;
   overflow: hidden;
   word-break: break-all;
-} 
+}
 
-.task[contenteditable=true]:empty:before, 
-.title[contenteditable=true]:empty:before{
+.task[contenteditable='true']:empty:before,
+.title[contenteditable='true']:empty:before {
   content: attr(placeholder);
-  
+
   display: block; /* For Firefox */
   color: var(--cGrey6);
   font-weight: 400 !important;
@@ -188,15 +272,15 @@ body{
 .done {
   color: var(--cGrey7);
   text-decoration: line-through;
-  text-decoration-thickness: 2px
+  text-decoration-thickness: 2px;
 }
 
-.checkbox{
+.checkbox {
   cursor: pointer;
   position: relative;
 }
 
-input[type='checkbox']:after{
+input[type='checkbox']:after {
   content: '';
   background-color: var(--cBrand4);
   border-radius: 0.25em;
@@ -209,91 +293,96 @@ input[type='checkbox']:after{
 }
 
 input[type='checkbox']:checked:after {
-
   content: url(./assets/img/Tick.svg);
   background-color: var(--cBrand1);
   border: solid 2px var(--cBrand1);
-
 }
 
-.trash{
+.trash {
   height: 26px;
   width: 26px;
   cursor: pointer;
 }
-.trash-a,.trash-b{
-  fill:none;
-  stroke:var(--cBlanco);
+.trash-a,
+.trash-b {
+  fill: none;
+  stroke: var(--cBlanco);
 }
-.trash:hover .trash-a,.trash:hover  .trash-b{
-  stroke:var(--cBrand1);
+.trash:hover .trash-a,
+.trash:hover .trash-b {
+  stroke: var(--cBrand1);
 }
-.trash-a,.trash-c{
-  stroke-linecap:round;
+.trash-a,
+.trash-c {
+  stroke-linecap: round;
 }
-.trash-a,.trash-b{
-  stroke-width:2.5px;
+.trash-a,
+.trash-b {
+  stroke-width: 2.5px;
 }
-
 
 /*==============================================*/
-.documentItem{
+.documentItem {
   position: absolute;
   left: 160px;
   top: 200px;
-  
 }
-.itemMoveEditable.documentItem .doc_outline{
+
+.itemLocked.documentItem .doc_outline {
   stroke: var(--cBlanco);
   stroke-width: 4;
 }
-.doc__title-board{
-  text-shadow: -.6px 0 rgba(255, 255, 255, 0.497), 0 .6px rgba(255, 255, 255, 0.456), .6px 0 rgba(255, 255, 255, 0.489), 0 -.6px rgba(255, 255, 255, 0.489);
+
+.itemSelected.documentItem .doc_outline {
+  stroke: var(--cBlanco);
+  stroke-width: 1;
+}
+.doc__title-board {
+  text-shadow:
+    -0.6px 0 rgba(255, 255, 255, 0.497),
+    0 0.6px rgba(255, 255, 255, 0.456),
+    0.6px 0 rgba(255, 255, 255, 0.489),
+    0 -0.6px rgba(255, 255, 255, 0.489);
 }
 
-
 /*==============================================*/
-.imgItem{
+.imgItem {
   position: absolute;
   left: 160px;
   top: 200px;
   width: 400px;
-  min-width: 300px;
+  min-width: 400px;
   max-width: 700px;
   min-height: 300px;
   max-height: 700px;
   resize: both;
   overflow: hidden;
+  pointer-events: auto;
 }
-.itemMoveEditable.imgItem{
+
+.itemLocked.imgItem {
   outline: solid 4px var(--cBlanco);
+  resize: none;
 }
-.imgItem img{
+
+.itemSelected.imgItem {
+  outline: solid 1px var(--cBlanco);
+}
+.imgItem img {
   min-height: inherit;
 }
 ::-webkit-resizer {
   background-image: url(./assets/img/resizer.svg);
 }
 
-
 /*==============================================*/
 
-
-.trashOpacity{
-  opacity: .8;
-  transform: scale(.9);
-  transition: all .2s ease-out;
+.trashOpacity {
+  opacity: 0.8;
+  transform: scale(0.9);
+  transition: all 0.2s ease-out;
 }
 
 /*==============================================*/
 
-.itemMoveBlock::after{
-  content: "";
-  cursor: pointer;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
+/* itemMoveBlock removed - now using itemLocked/itemUnlocked classes */
